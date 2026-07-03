@@ -214,7 +214,7 @@ input.nn{
     </div>
     <p class="pouczenie">Pouczenie: wariant sprawy (dowolna liczba od 01 do 99) strony uzgadniają między sobą <b>ustnie</b>, przed przystąpieniem do czynności. Obie strony wpisują tę samą liczbę. Biuro nie pośredniczy w uzgodnieniu i traktuje je jako pierwszą czynność stron dokonaną bez udziału organu.</p>
     <button class="przycisk" onclick="BPT.zatwierdzNN()">Nadaję sygnaturę</button>
-    <div class="czynnosci"><button onclick="BPT.wszczecie()">Powrót do wykazu kategorii</button></div>
+    <div class="czynnosci"><button onclick="BPT.pokazKategorie()">Powrót do wykazu kategorii</button></div>
   </section>
 
   <!-- ================= EKRAN: WYBÓR ROLI ================= -->
@@ -225,7 +225,7 @@ input.nn{
     <p class="adnotacja" style="text-align:center">strona zadająca pytania</p>
     <button class="przycisk" onclick="BPT.wybierzRole('indagowana')">Występuję jako strona indagowana</button>
     <p class="adnotacja" style="text-align:center">strona udzielająca odpowiedzi</p>
-    <p class="pouczenie">Pouczenie: postępowanie wymaga dokładnie jednej strony indagującej. Biuro nie dysponuje środkami technicznymi pozwalającymi to zweryfikować i poprzestaje na niniejszym pouczeniu. Odpowiedzialność za zgodność ról strony ponoszą solidarnie.</p>
+    <p class="pouczenie">Pouczenie: postępowanie wymaga dokładnie jednej strony indagującej. Wybór dotyczy wyłącznie pytania pierwszego — po każdym pytaniu role stron ulegają zamianie z urzędu, bez odrębnego postanowienia. Biuro nie dysponuje środkami technicznymi pozwalającymi zweryfikować zgodność wyboru i poprzestaje na niniejszym pouczeniu. Odpowiedzialność za zgodność ról strony ponoszą solidarnie.</p>
     <div class="czynnosci"><button onclick="BPT.doStartu()">Powrót do biura podawczego</button></div>
   </section>
 
@@ -240,10 +240,10 @@ input.nn{
       <span class="etykieta">Rubryka 2 — treść pytania <span id="pytanie-naglowek"></span></span>
       <div class="tresc-pytania" id="pytanie-tresc"></div>
     </div>
-    <p class="pouczenie">Pouczenie: proszę odczytać pytanie wyraźnie, w całości, bez skrótów. Nie sugerować odpowiedzi. Nie okazywać ekranu stronie indagowanej. Po udzieleniu odpowiedzi przez stronę indagowaną można wydać kolejne pytanie.</p>
-    <button class="przycisk" onclick="BPT.kolejnePytanie()">Wydaję kolejne pytanie</button>
-    <button class="przycisk drugorzedny" onclick="BPT.ekranZmianyStron('indagowana')">Wpłynął wniosek o zmianę stron postępowania</button>
+    <p class="pouczenie">Pouczenie: proszę odczytać pytanie wyraźnie, w całości, bez skrótów. Nie sugerować odpowiedzi. Nie okazywać ekranu stronie indagowanej. Po udzieleniu odpowiedzi następuje zmiana stron z urzędu: kolejne pytanie wydaje strona dotychczas indagowana.</p>
+    <button class="przycisk" onclick="BPT.kolejnePytanie()">Kolejne pytanie — przyjmuję rolę strony indagowanej</button>
     <div class="czynnosci">
+      <button onclick="BPT.zmianaSygnatury()">Zmiana sygnatury sprawy</button> ·
       <button onclick="BPT.ekranSprostowania()">Sprostowanie omyłki pisarskiej</button> ·
       <button onclick="BPT.ekranUmorzenia()">Umorzenie postępowania</button>
     </div>
@@ -263,6 +263,7 @@ input.nn{
     <p class="pouczenie">Pouczenie: formularz odpowiedzi pozostaje zamknięty do chwili wysłuchania pytania. Proszę słuchać uważnie: pytanie odczytuje się co do zasady jednokrotnie.</p>
     <button class="przycisk" onclick="BPT.przystapDoOdpowiedzi()">Przystępuję do odpowiedzi</button>
     <div class="czynnosci">
+      <button onclick="BPT.zmianaSygnatury()">Zmiana sygnatury sprawy</button> ·
       <button onclick="BPT.ekranSprostowania()">Sprostowanie omyłki pisarskiej</button> ·
       <button onclick="BPT.ekranUmorzenia()">Umorzenie postępowania</button>
     </div>
@@ -285,32 +286,19 @@ input.nn{
     </div>
     <p class="adnotacja" id="odpowiedz-uzupelnienie" style="display:none; text-align:center;">Przyjęto do wiadomości. Organ oczekuje w gotowości. Czas wypowiedzi strony nie podlega ograniczeniu.</p>
     <button class="przycisk drugorzedny" onclick="BPT.uzupelniam()">Uzupełniam odpowiedź</button>
-    <button class="przycisk drugorzedny" onclick="BPT.ekranZmianyStron('indagujaca')">Wnoszę o zmianę stron postępowania</button>
-    <button class="przycisk" onclick="BPT.kolejnePytanie()">Oczekuję kolejnego pytania</button>
+    <button class="przycisk" onclick="BPT.kolejnePytanie()">Kolejne pytanie — przyjmuję rolę strony indagującej</button>
     <div class="czynnosci">
+      <button onclick="BPT.zmianaSygnatury()">Zmiana sygnatury sprawy</button> ·
       <button onclick="BPT.ekranSprostowania()">Sprostowanie omyłki pisarskiej</button> ·
       <button onclick="BPT.ekranUmorzenia()">Umorzenie postępowania</button>
     </div>
   </section>
 
-  <!-- ================= EKRAN: ZMIANA STRON NA WNIOSEK ================= -->
-  <section class="ekran" id="ekran-zmiana">
-    <h2 class="tytul-czynnosci">Zmiana stron postępowania</h2>
-    <div class="metryka"><span>Sygn. akt <b class="m-sygnatura"></b></span><span>na wniosek strony</span></div>
-    <div class="rubryka">
-      <span class="etykieta">Stan czynności</span>
-      <p style="margin:0">Wniosek o zmianę stron postępowania uwzględnia się w całości. Obie strony dokonują zmiany ról <b>równocześnie</b>, każda na własnym urządzeniu.</p>
-    </div>
-    <button class="przycisk" id="zmiana-przycisk" onclick="BPT.wykonajZmianeStron()"></button>
-    <p class="pouczenie">Pouczenie: z chwilą zmiany stron licznik pytań prowadzonych w jedną stronę biegnie na nowo. Sprawa zachowuje sygnaturę i tok.</p>
-    <div class="czynnosci"><button onclick="BPT.renderuj()">Cofam wniosek — powrót do czynności</button></div>
-  </section>
-
-  <!-- ================= EKRAN: POSTANOWIENIE Z URZĘDU ================= -->
+  <!-- ================= EKRAN: POSTANOWIENIE O PRZEKAZANIU SPRAWY (zmiana sygnatury) ================= -->
   <section class="ekran" id="ekran-postanowienie">
     <div class="dokument">
       <h3>Postanowienie</h3>
-      <p class="sentencja">Postanowieniem z urzędu następuje<br><b>zmiana stron postępowania</b>.</p>
+      <p class="sentencja" id="postanowienie-sentencja"></p>
       <p class="adnotacja">Postanowienie jest ostateczne i nie podlega zaskarżeniu.</p>
       <div class="pieczec-pole" id="postanowienie-pieczec"></div>
       <div class="linia-podpisu"></div>
@@ -335,7 +323,10 @@ input.nn{
       <ul class="opcje" id="pilny-opcje"></ul>
     </div>
     <button class="przycisk" onclick="BPT.pilnyKolejny()">Wnoszę o niezwłoczne wydanie kolejnego tematu</button>
-    <div class="czynnosci"><button onclick="BPT.ekranUmorzenia()">Umorzenie postępowania</button></div>
+    <div class="czynnosci">
+      <button onclick="BPT.trybPilny()">Zmiana kategorii spraw</button> ·
+      <button onclick="BPT.ekranUmorzenia()">Umorzenie postępowania</button>
+    </div>
   </section>
 
   <!-- ================= EKRAN: WYBÓR KATEGORII TRYBU PILNEGO — używa ekranu kategorii ================= -->
@@ -366,7 +357,7 @@ input.nn{
       <label style="display:block; padding:6px 0;"><input type="radio" name="sprostowanie-rola" value="indagujaca"> strona indagująca</label>
       <label style="display:block; padding:6px 0;"><input type="radio" name="sprostowanie-rola" value="indagowana"> strona indagowana</label>
     </div>
-    <p class="pouczenie">Pouczenie: sprostowania dokonuje się, gdy urządzenia stron wskazują różne numery pytań. Strony uzgadniają ustnie właściwy numer i rolę, po czym każda strona wprowadza sprostowanie na własnym urządzeniu. Licznik zmiany stron z urzędu ustala się na nowo według numeru pytania.</p>
+    <p class="pouczenie">Pouczenie: sprostowania dokonuje się, gdy urządzenia stron wskazują różne numery pytań. Strony uzgadniają ustnie właściwy numer i rolę, po czym każda strona wprowadza sprostowanie na własnym urządzeniu.</p>
     <button class="przycisk" onclick="BPT.wykonajSprostowanie()">Zatwierdzam sprostowanie</button>
     <div class="czynnosci"><button onclick="BPT.renderuj()">Odstępuję od sprostowania</button></div>
   </section>
@@ -528,10 +519,16 @@ const BPT = {
       document.getElementById("blad-nn").textContent = "Wariant sprawy oznacza się liczbą od 01 do 99. Braki formalne wstrzymują bieg sprawy.";
       return;
     }
-    akta = { tryb:"dwustronne", kat:BPT.nowaKategoria, nn:nn, indeks:0, odNadania:0, rola:null, odslonieta:false, postanowienie:false };
+    /* Przy zmianie sygnatury w toku sprawy najpierw wydaje się postanowienie
+       o przekazaniu; role wskazuje się na nowo od pytania nr 1. */
+    const przekazanie = (BPT.trybDocelowy === "zmiana");
+    akta = { tryb:"dwustronne", kat:BPT.nowaKategoria, nn:nn, indeks:0, rola:null, odslonieta:false, przekazanie:przekazanie };
     zapisz();
-    document.getElementById("rola-sygnatura").textContent = sygnatura();
-    pokaz("ekran-rola");
+    if(przekazanie){ BPT.pokazPrzekazanie(); }
+    else {
+      document.getElementById("rola-sygnatura").textContent = sygnatura();
+      pokaz("ekran-rola");
+    }
   },
 
   wybierzRole(rola){
@@ -544,10 +541,10 @@ const BPT = {
   renderuj(){
     if(!akta){ BPT.doStartu(); return; }
     if(akta.tryb === "pilny"){ BPT.renderujPilny(); return; }
+    if(akta.przekazanie){ BPT.pokazPrzekazanie(); return; }
     if(akta.rola === null){ document.getElementById("rola-sygnatura").textContent = sygnatura(); pokaz("ekran-rola"); return; }
     const pula = kolejnoscPytan(akta.kat, akta.nn).length;
     if(akta.indeks >= pula){ pokaz("ekran-wyczerpanie"); return; }
-    if(akta.postanowienie){ BPT.pokazPostanowienie(); return; }
     uzupelnijMetryke();
     if(akta.rola === "indagujaca"){
       document.getElementById("pytanie-naglowek").textContent = "— pytanie nr " + (akta.indeks + 1) + " w sprawie " + sygnatura();
@@ -582,54 +579,37 @@ const BPT = {
     document.getElementById("odpowiedz-uzupelnienie").style.display = "block";
   },
 
-  /* — przejście do kolejnego pytania (obie strony, każda na swoim urządzeniu) — */
+  /* — przejście do kolejnego pytania (obie strony, każda na swoim urządzeniu) —
+     Z każdym pytaniem role stron ulegają zamianie z urzędu (tryb naprzemienny).
+     Rola wynika wprost z numeru pytania, więc oba urządzenia — licząc
+     niezależnie — pozostają w zgodzie. */
   kolejnePytanie(){
     akta.indeks += 1;
+    akta.rola = (akta.rola === "indagujaca") ? "indagowana" : "indagujaca";
     akta.odslonieta = false;
-    akta.odNadania += 1;
-    if(akta.odNadania >= 3){
-      /* Po trzech pytaniach w jedną stronę: zmiana stron z urzędu.
-         Oba urządzenia liczą niezależnie i dochodzą do tego samego wniosku. */
-      akta.postanowienie = true;
-    }
     zapisz();
     BPT.renderuj();
   },
 
-  /* — postanowienie z urzędu — */
-  pokazPostanowienie(){
+  /* — zmiana sygnatury w toku sprawy — */
+  zmianaSygnatury(){
+    BPT.trybDocelowy = "zmiana";
+    BPT.pokazKategorie();
+  },
+  /* Postanowienie o przekazaniu sprawy pod nową sygnaturę (z pieczęcią) */
+  pokazPrzekazanie(){
     document.getElementById("postanowienie-pieczec").innerHTML = pieczecSVG(150, "postanowienie");
-    const nowaRola = (akta.rola === "indagujaca") ? "indagowanej" : "indagującej";
+    document.getElementById("postanowienie-sentencja").innerHTML =
+      "Postanowieniem na zgodny wniosek stron sprawę przekazuje się do dalszego rozpoznania pod sygnaturą <b>" + sygnatura() + "</b>.";
     document.getElementById("postanowienie-pouczenie").textContent =
-      "Pouczenie: z chwilą przyjęcia postanowienia do wiadomości strona przyjmuje rolę strony " + nowaRola + ". Sprawa zachowuje sygnaturę i tok.";
+      "Pouczenie: z chwilą przyjęcia postanowienia do wiadomości strony wskazują role na nowo, poczynając od pytania nr 1. Dotychczasowy materiał dowodowy pozostawia się w aktach bez dalszego biegu.";
     pokaz("ekran-postanowienie");
   },
   przyjmujPostanowienie(){
-    akta.rola = (akta.rola === "indagujaca") ? "indagowana" : "indagujaca";
-    akta.odNadania = 0;
-    akta.postanowienie = false;
+    akta.przekazanie = false;
     zapisz();
-    BPT.renderuj();
-  },
-
-  /* — zmiana stron na wniosek — */
-  ekranZmianyStron(nowaRola){
-    /* nowaRola: rola, którą przyjmie TA strona po zmianie */
-    BPT.rolaPoZmianie = nowaRola;
-    uzupelnijMetryke();
-    document.getElementById("zmiana-przycisk").textContent =
-      "Przyjmuję rolę strony " + (nowaRola === "indagujaca" ? "indagującej" : "indagowanej");
-    pokaz("ekran-zmiana");
-  },
-  rolaPoZmianie: null,
-  wykonajZmianeStron(){
-    akta.rola = BPT.rolaPoZmianie;
-    akta.odNadania = 0;
-    akta.indeks += 1;       /* sprawa biegnie dalej: następne pytanie z tej samej sekwencji */
-    akta.odslonieta = false;
-    akta.postanowienie = false;
-    zapisz();
-    BPT.renderuj();
+    document.getElementById("rola-sygnatura").textContent = sygnatura();
+    pokaz("ekran-rola");
   },
 
   /* — sprostowanie omyłki pisarskiej — */
@@ -654,9 +634,7 @@ const BPT = {
     }
     akta.indeks = nr - 1;
     akta.rola = rola;
-    akta.odNadania = (nr - 1) % 3;  /* licznik zmiany z urzędu ustalony na nowo wg numeru pytania */
     akta.odslonieta = false;
-    akta.postanowienie = false;
     zapisz();
     BPT.renderuj();
   },

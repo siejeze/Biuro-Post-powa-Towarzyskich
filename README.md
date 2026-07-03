@@ -38,10 +38,15 @@ Po pierwszym otwarciu aplikacja działa również bez internetu.
 1. Dwie osoby uzgadniają **ustnie** sygnaturę sprawy, np. `3-17`
    (kategoria 1–5 oraz dowolna liczba 01–99).
 2. Każda wpisuje tę samą sygnaturę na swoim telefonie.
-3. Jedna wybiera rolę **strony indagującej** (pyta), druga — **indagowanej** (odpowiada).
+3. Jedna wybiera rolę **strony indagującej** (pyta), druga — **indagowanej**
+   (odpowiada). Wybór dotyczy tylko pierwszego pytania.
 4. Ta sama sygnatura daje identyczną kolejność pytań na obu telefonach.
-5. Po trzech pytaniach w jedną stronę Biuro z urzędu zarządza zmianę stron.
-6. Gdy liczniki się rozjadą — menu „Sprostowanie omyłki pisarskiej" pozwala
-   ręcznie ustawić numer pytania.
+5. Po każdym pytaniu role zamieniają się **automatycznie** (dialogowy ping-pong):
+   kto odpowiadał, ten zadaje następne pytanie.
+6. W toku sprawy można zmienić sygnaturę („Zmiana sygnatury sprawy" pod pytaniem) —
+   obie osoby uzgadniają nową ustnie i wpisują ją u siebie, po czym na nowo
+   wskazują role.
+7. Gdy liczniki się rozjadą — „Sprostowanie omyłki pisarskiej" pozwala
+   ręcznie ustawić numer pytania i rolę.
 
 Tryb awaryjny na jeden telefon: **„Wniosek w trybie pilnym"** na ekranie startowym.
