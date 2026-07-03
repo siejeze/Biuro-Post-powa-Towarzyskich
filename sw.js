@@ -4,7 +4,7 @@
    (cache-first). Aplikacja działa w pełni bez łączności.
    Przy zmianie wersji należy podnieść numer archiwum poniżej.
    ============================================================ */
-const ARCHIWUM = "bpt-archiwum-v2";
+const ARCHIWUM = "bpt-archiwum-v3";
 const AKTA = [
   "./",
   "./index.html",
