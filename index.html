@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#efe9da">
+<meta name="description" content="Biuro Postępowań Towarzyskich — organ właściwy w sprawach nawiązywania rozmowy.">
+<title>Biuro Postępowań Towarzyskich</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="BPT">
+<style>
+/* ============================================================
+   BIURO POSTĘPOWAŃ TOWARZYSKICH — arkusz stylów
+   Estetyka: polski urząd, papier, tusz, czerwień pieczęci.
+   ============================================================ */
+:root{
+  --papier:      #f7f2e6;   /* ecru formularza          */
+  --papier-tlo:  #e7e0cd;   /* blat pod formularzem     */
+  --tusz:        #1c1a17;   /* czerń maszynowa          */
+  --tusz-blady:  #5a544a;   /* adnotacje drobne         */
+  --linia:       #b7ab8f;   /* linie rubryk             */
+  --czerwien:    #a3271f;   /* czerwień pieczęci        */
+}
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  background:var(--papier-tlo);
+  color:var(--tusz);
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:17px; line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+/* Karta akt — główna kolumna treści */
+.karta{
+  max-width:620px; margin:0 auto; min-height:100vh;
+  background:var(--papier);
+  border-left:1px solid var(--linia); border-right:1px solid var(--linia);
+  padding:18px 18px 40px;
+  box-shadow:0 0 24px rgba(0,0,0,.12);
+}
+/* Nagłówek urzędowy */
+.naglowek{ text-align:center; border-bottom:3px double var(--tusz); padding-bottom:14px; margin-bottom:18px; }
+.naglowek .godlo{ width:64px; height:64px; margin:0 auto 6px; }
+.naglowek h1{
+  font-size:1.05rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; margin:.2em 0 0;
+}
+.naglowek .podtytul{
+  font-size:.72rem; letter-spacing:.22em; text-transform:uppercase; color:var(--tusz-blady); margin-top:4px;
+}
+/* Ekrany — widoczny jest zawsze dokładnie jeden */
+.ekran{ display:none; }
+.ekran.aktywny{ display:block; animation:wjazd .18s ease-out; }
+@keyframes wjazd{ from{ opacity:0; transform:translateY(4px);} to{ opacity:1; transform:none;} }
+
+h2.tytul-czynnosci{
+  font-size:.92rem; letter-spacing:.16em; text-transform:uppercase; text-align:center;
+  margin:6px 0 16px; font-weight:700;
+}
+h2.tytul-czynnosci::after{ content:""; display:block; width:90px; margin:10px auto 0; border-bottom:1px solid var(--tusz); }
+
+/* Metryka sprawy (pasek nad treścią) */
+.metryka{
+  display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap;
+  border:1px solid var(--tusz); padding:7px 10px; margin-bottom:14px;
+  font-size:.72rem; letter-spacing:.1em; text-transform:uppercase;
+}
+.metryka b{ font-weight:700; }
+
+/* Rubryka — obramowana sekcja dokumentu */
+.rubryka{ border:1px solid var(--tusz); padding:14px 14px; margin:14px 0; background:rgba(255,255,255,.35); }
+.rubryka .etykieta{
+  display:block; font-size:.68rem; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--tusz-blady); margin-bottom:8px;
+}
+.tresc-pytania{ font-size:1.13rem; line-height:1.5; }
+
+/* Pouczenia drobnym drukiem */
+.pouczenie{
+  font-size:.8rem; font-style:italic; color:var(--tusz-blady);
+  border-top:1px dashed var(--linia); margin-top:14px; padding-top:10px;
+}
+.adnotacja{ font-size:.8rem; color:var(--tusz-blady); margin:8px 0; }
+
+/* Przyciski — duże, do obsługi na stojąco */
+button{ font:inherit; color:inherit; }
+.przycisk{
+  display:block; width:100%; padding:15px 14px; margin:12px 0;
+  background:transparent; border:2px solid var(--tusz); border-radius:0;
+  font-size:.95rem; letter-spacing:.1em; text-transform:uppercase; font-weight:700;
+  cursor:pointer; text-align:center;
+}
+.przycisk:active{ background:var(--tusz); color:var(--papier); }
+.przycisk.drugorzedny{ border-width:1px; font-weight:400; font-size:.85rem; padding:12px; }
+.przycisk.czerwony{ border-color:var(--czerwien); color:var(--czerwien); }
+.przycisk.czerwony:active{ background:var(--czerwien); color:var(--papier); }
+
+/* Wykaz kategorii */
+.wykaz{ margin:0; padding:0; list-style:none; }
+.wykaz button{
+  display:block; width:100%; text-align:left; background:transparent;
+  border:1px solid var(--tusz); margin:10px 0; padding:12px 14px; cursor:pointer;
+}
+.wykaz button:active{ background:var(--tusz); color:var(--papier); }
+.wykaz .nr{ font-weight:700; letter-spacing:.06em; }
+.wykaz .nazwa{ font-weight:700; text-transform:uppercase; font-size:.88rem; letter-spacing:.08em; }
+.wykaz .zakres{ display:block; font-size:.8rem; font-style:italic; color:var(--tusz-blady); margin-top:3px; }
+.wykaz button:active .zakres{ color:inherit; }
+
+/* Formularz odpowiedzi a)–e) */
+.opcje{ margin:0; padding:0; list-style:none; }
+.opcje li{
+  display:flex; gap:10px; padding:11px 4px; border-bottom:1px dotted var(--linia);
+}
+.opcje li:last-child{ border-bottom:none; }
+.opcje .litera{ font-weight:700; min-width:1.4em; }
+.opcje li.wlasna{ font-style:italic; }
+.opcje li.wlasna .dopisek{ font-size:.82rem; color:var(--tusz-blady); display:block; }
+
+/* Pole sygnatury */
+.pole-nn{ display:flex; align-items:baseline; gap:10px; justify-content:center; margin:16px 0; }
+.pole-nn .prefiks{ font-size:2rem; font-weight:700; letter-spacing:.05em; }
+input.nn{
+  font:inherit; font-size:2rem; font-weight:700; width:3.2em; text-align:center;
+  background:transparent; color:inherit;
+  border:none; border-bottom:2px solid var(--tusz); border-radius:0; outline:none;
+}
+.blad{ color:var(--czerwien); font-size:.85rem; text-align:center; min-height:1.2em; margin:4px 0; }
+
+/* Pieczęć okrągła */
+.pieczec{ display:block; margin:0 auto; }
+.pieczec-czerwona{ color:var(--czerwien); }
+
+/* Postanowienie pełnoekranowe */
+#ekran-postanowienie .dokument{
+  border:2px solid var(--tusz); padding:26px 18px; text-align:center; margin-top:8px;
+  background:rgba(255,255,255,.4);
+}
+#ekran-postanowienie h3{
+  font-size:1rem; letter-spacing:.3em; text-transform:uppercase; margin:0 0 18px;
+}
+#ekran-postanowienie .sentencja{ font-size:1.12rem; margin:0 0 6px; }
+#ekran-postanowienie .pieczec-pole{ margin:22px auto 6px; width:150px; height:150px; position:relative; }
+#ekran-postanowienie .pieczec-pole svg{
+  animation:przybicie .5s cubic-bezier(.2,.7,.3,1.15) both; transform-origin:center;
+}
+@keyframes przybicie{
+  0%  { transform:scale(2.1) rotate(-20deg); opacity:0; }
+  55% { transform:scale(.94) rotate(-8deg);  opacity:1; }
+  100%{ transform:scale(1)   rotate(-8deg);  opacity:.92; }
+}
+
+/* Czynności kancelaryjne (stopka ekranu) */
+.czynnosci{
+  margin-top:26px; padding-top:12px; border-top:1px solid var(--linia);
+  font-size:.78rem; text-align:center; color:var(--tusz-blady);
+}
+.czynnosci button{
+  background:none; border:none; padding:6px 8px; cursor:pointer;
+  font-size:.78rem; color:var(--tusz-blady); text-decoration:underline; letter-spacing:.04em;
+}
+.stopka{
+  margin-top:30px; text-align:center; font-size:.68rem; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--tusz-blady);
+}
+/* Linia na podpis — czysto dekoracyjna */
+.linia-podpisu{ margin:26px 30px 0; border-bottom:1px solid var(--tusz); height:22px; }
+.podpis-etykieta{ text-align:center; font-size:.68rem; letter-spacing:.16em; text-transform:uppercase; color:var(--tusz-blady); margin-top:4px; }
+</style>
+</head>
+<body>
+<div class="karta">
+
+  <header class="naglowek">
+    <div class="godlo" id="godlo"></div>
+    <h1>Biuro Postępowań Towarzyskich</h1>
+    <div class="podtytul">Wydział Wszczynania Rozmów · z urzędu</div>
+  </header>
+
+  <!-- ================= EKRAN: START ================= -->
+  <section class="ekran" id="ekran-start">
+    <h2 class="tytul-czynnosci">Biuro przyjmuje</h2>
+    <div id="start-wznowienie"></div>
+    <button class="przycisk" onclick="BPT.wszczecie()">Wszczęcie postępowania</button>
+    <p class="adnotacja" style="text-align:center">postępowanie dwustronne — dwa urządzenia</p>
+    <button class="przycisk drugorzedny" onclick="BPT.trybPilny()">Wniosek w trybie pilnym</button>
+    <p class="adnotacja" style="text-align:center">jedno urządzenie, do wspólnego odczytu</p>
+    <p class="pouczenie">Pouczenie: Biuro prowadzi postępowania w sprawach nawiązywania rozmowy między dwiema osobami. Postępowanie toczy się niezależnie od tego, czy strony mają sobie coś do powiedzenia. Właśnie na tę okoliczność zostało wszczęte niniejsze Biuro.</p>
+    <div class="stopka">BPT · organ I instancji · działa bez łączności</div>
+  </section>
+
+  <!-- ================= EKRAN: WYBÓR KATEGORII ================= -->
+  <section class="ekran" id="ekran-kategoria">
+    <h2 class="tytul-czynnosci">Proszę podać sygnaturę sprawy</h2>
+    <p class="adnotacja">Wykaz kategorii postępowań prowadzonych przez Biuro:</p>
+    <ul class="wykaz" id="wykaz-kategorii"></ul>
+    <p class="pouczenie">Pouczenie: sygnatura sprawy ma format K-NN, gdzie K oznacza kategorię, a NN — wariant sprawy (01–99). W postępowaniu dwustronnym obie strony wpisują tę samą sygnaturę, każda na własnym urządzeniu.</p>
+    <div class="czynnosci"><button onclick="BPT.doStartu()">Powrót do biura podawczego</button></div>
+  </section>
+
+  <!-- ================= EKRAN: WARIANT NN ================= -->
+  <section class="ekran" id="ekran-wariant">
+    <h2 class="tytul-czynnosci">Nadanie sygnatury</h2>
+    <div class="rubryka">
+      <span class="etykieta">Rubryka 1 — sygnatura sprawy</span>
+      <div class="pole-nn">
+        <span class="prefiks" id="wariant-prefiks">1-</span>
+        <input class="nn" id="pole-nn" inputmode="numeric" maxlength="2" placeholder="__" autocomplete="off">
+      </div>
+      <div class="blad" id="blad-nn"></div>
+    </div>
+    <p class="pouczenie">Pouczenie: wariant sprawy (dowolna liczba od 01 do 99) strony uzgadniają między sobą <b>ustnie</b>, przed przystąpieniem do czynności. Obie strony wpisują tę samą liczbę. Biuro nie pośredniczy w uzgodnieniu i traktuje je jako pierwszą czynność stron dokonaną bez udziału organu.</p>
+    <button class="przycisk" onclick="BPT.zatwierdzNN()">Nadaję sygnaturę</button>
+    <div class="czynnosci"><button onclick="BPT.wszczecie()">Powrót do wykazu kategorii</button></div>
+  </section>
+
+  <!-- ================= EKRAN: WYBÓR ROLI ================= -->
+  <section class="ekran" id="ekran-rola">
+    <h2 class="tytul-czynnosci">Proszę wskazać stronę postępowania</h2>
+    <div class="metryka"><span>Sygn. akt <b id="rola-sygnatura"></b></span><span>karta ról</span></div>
+    <button class="przycisk" onclick="BPT.wybierzRole('indagujaca')">Występuję jako strona indagująca</button>
+    <p class="adnotacja" style="text-align:center">strona zadająca pytania</p>
+    <button class="przycisk" onclick="BPT.wybierzRole('indagowana')">Występuję jako strona indagowana</button>
+    <p class="adnotacja" style="text-align:center">strona udzielająca odpowiedzi</p>
+    <p class="pouczenie">Pouczenie: postępowanie wymaga dokładnie jednej strony indagującej. Biuro nie dysponuje środkami technicznymi pozwalającymi to zweryfikować i poprzestaje na niniejszym pouczeniu. Odpowiedzialność za zgodność ról strony ponoszą solidarnie.</p>
+    <div class="czynnosci"><button onclick="BPT.doStartu()">Powrót do biura podawczego</button></div>
+  </section>
+
+  <!-- ================= EKRAN: PYTANIE (STRONA INDAGUJĄCA) ================= -->
+  <section class="ekran" id="ekran-pytanie">
+    <div class="metryka">
+      <span>Sygn. akt <b class="m-sygnatura"></b></span>
+      <span>strona indagująca</span>
+      <span>Pytanie nr <b class="m-numer"></b></span>
+    </div>
+    <div class="rubryka">
+      <span class="etykieta">Rubryka 2 — treść pytania <span id="pytanie-naglowek"></span></span>
+      <div class="tresc-pytania" id="pytanie-tresc"></div>
+    </div>
+    <p class="pouczenie">Pouczenie: proszę odczytać pytanie wyraźnie, w całości, bez skrótów. Nie sugerować odpowiedzi. Nie okazywać ekranu stronie indagowanej. Po udzieleniu odpowiedzi przez stronę indagowaną można wydać kolejne pytanie.</p>
+    <button class="przycisk" onclick="BPT.kolejnePytanie()">Wydaję kolejne pytanie</button>
+    <button class="przycisk drugorzedny" onclick="BPT.ekranZmianyStron('indagowana')">Wpłynął wniosek o zmianę stron postępowania</button>
+    <div class="czynnosci">
+      <button onclick="BPT.ekranSprostowania()">Sprostowanie omyłki pisarskiej</button> ·
+      <button onclick="BPT.ekranUmorzenia()">Umorzenie postępowania</button>
+    </div>
+  </section>
+
+  <!-- ================= EKRAN: OCZEKIWANIE (STRONA INDAGOWANA) ================= -->
+  <section class="ekran" id="ekran-oczekiwanie">
+    <div class="metryka">
+      <span>Sygn. akt <b class="m-sygnatura"></b></span>
+      <span>strona indagowana</span>
+      <span>Pytanie nr <b class="m-numer"></b></span>
+    </div>
+    <div class="rubryka" style="text-align:center; padding:30px 14px;">
+      <span class="etykieta">Stan czynności</span>
+      <p style="margin:0; font-size:1.05rem;">Oczekiwanie na odczytanie pytania<br>przez stronę indagującą.</p>
+    </div>
+    <p class="pouczenie">Pouczenie: formularz odpowiedzi pozostaje zamknięty do chwili wysłuchania pytania. Proszę słuchać uważnie: pytanie odczytuje się co do zasady jednokrotnie.</p>
+    <button class="przycisk" onclick="BPT.przystapDoOdpowiedzi()">Przystępuję do odpowiedzi</button>
+    <div class="czynnosci">
+      <button onclick="BPT.ekranSprostowania()">Sprostowanie omyłki pisarskiej</button> ·
+      <button onclick="BPT.ekranUmorzenia()">Umorzenie postępowania</button>
+    </div>
+  </section>
+
+  <!-- ================= EKRAN: FORMULARZ ODPOWIEDZI (STRONA INDAGOWANA) ================= -->
+  <section class="ekran" id="ekran-odpowiedz">
+    <div class="metryka">
+      <span>Sygn. akt <b class="m-sygnatura"></b></span>
+      <span>strona indagowana</span>
+      <span>Pytanie nr <b class="m-numer"></b></span>
+    </div>
+    <div class="rubryka">
+      <span class="etykieta">Rubryka 2 — treść pytania (do wglądu strony)</span>
+      <div class="tresc-pytania" id="odpowiedz-pytanie" style="font-size:.98rem;"></div>
+    </div>
+    <div class="rubryka">
+      <span class="etykieta">Rubryka 3 — formularz odpowiedzi</span>
+      <ul class="opcje" id="odpowiedz-opcje"></ul>
+    </div>
+    <p class="adnotacja" id="odpowiedz-uzupelnienie" style="display:none; text-align:center;">Przyjęto do wiadomości. Organ oczekuje w gotowości. Czas wypowiedzi strony nie podlega ograniczeniu.</p>
+    <button class="przycisk drugorzedny" onclick="BPT.uzupelniam()">Uzupełniam odpowiedź</button>
+    <button class="przycisk drugorzedny" onclick="BPT.ekranZmianyStron('indagujaca')">Wnoszę o zmianę stron postępowania</button>
+    <button class="przycisk" onclick="BPT.kolejnePytanie()">Oczekuję kolejnego pytania</button>
+    <div class="czynnosci">
+      <button onclick="BPT.ekranSprostowania()">Sprostowanie omyłki pisarskiej</button> ·
+      <button onclick="BPT.ekranUmorzenia()">Umorzenie postępowania</button>
+    </div>
+  </section>
+
+  <!-- ================= EKRAN: ZMIANA STRON NA WNIOSEK ================= -->
+  <section class="ekran" id="ekran-zmiana">
+    <h2 class="tytul-czynnosci">Zmiana stron postępowania</h2>
+    <div class="metryka"><span>Sygn. akt <b class="m-sygnatura"></b></span><span>na wniosek strony</span></div>
+    <div class="rubryka">
+      <span class="etykieta">Stan czynności</span>
+      <p style="margin:0">Wniosek o zmianę stron postępowania uwzględnia się w całości. Obie strony dokonują zmiany ról <b>równocześnie</b>, każda na własnym urządzeniu.</p>
+    </div>
+    <button class="przycisk" id="zmiana-przycisk" onclick="BPT.wykonajZmianeStron()"></button>
+    <p class="pouczenie">Pouczenie: z chwilą zmiany stron licznik pytań prowadzonych w jedną stronę biegnie na nowo. Sprawa zachowuje sygnaturę i tok.</p>
+    <div class="czynnosci"><button onclick="BPT.renderuj()">Cofam wniosek — powrót do czynności</button></div>
+  </section>
+
+  <!-- ================= EKRAN: POSTANOWIENIE Z URZĘDU ================= -->
+  <section class="ekran" id="ekran-postanowienie">
+    <div class="dokument">
+      <h3>Postanowienie</h3>
+      <p class="sentencja">Postanowieniem z urzędu następuje<br><b>zmiana stron postępowania</b>.</p>
+      <p class="adnotacja">Postanowienie jest ostateczne i nie podlega zaskarżeniu.</p>
+      <div class="pieczec-pole" id="postanowienie-pieczec"></div>
+      <div class="linia-podpisu"></div>
+      <div class="podpis-etykieta">za zgodność — organ prowadzący</div>
+    </div>
+    <p class="pouczenie" id="postanowienie-pouczenie"></p>
+    <button class="przycisk" onclick="BPT.przyjmujPostanowienie()">Przyjmuję do wiadomości</button>
+  </section>
+
+  <!-- ================= EKRAN: TRYB PILNY ================= -->
+  <section class="ekran" id="ekran-pilny">
+    <div class="metryka">
+      <span>Sygn. akt <b class="m-sygnatura"></b> <i>(pilne)</i></span>
+      <span>Temat nr <b class="m-numer"></b></span>
+    </div>
+    <div class="rubryka">
+      <span class="etykieta">Rubryka 2 — temat wydany niezwłocznie</span>
+      <div class="tresc-pytania" id="pilny-pytanie"></div>
+    </div>
+    <div class="rubryka">
+      <span class="etykieta">Rubryka 3 — formularz odpowiedzi (do wspólnego odczytu)</span>
+      <ul class="opcje" id="pilny-opcje"></ul>
+    </div>
+    <button class="przycisk" onclick="BPT.pilnyKolejny()">Wnoszę o niezwłoczne wydanie kolejnego tematu</button>
+    <div class="czynnosci"><button onclick="BPT.ekranUmorzenia()">Umorzenie postępowania</button></div>
+  </section>
+
+  <!-- ================= EKRAN: WYBÓR KATEGORII TRYBU PILNEGO — używa ekranu kategorii ================= -->
+
+  <!-- ================= EKRAN: WYCZERPANIE MATERIAŁU ================= -->
+  <section class="ekran" id="ekran-wyczerpanie">
+    <h2 class="tytul-czynnosci">Zakończenie czynności</h2>
+    <div class="rubryka" style="text-align:center; padding:28px 14px;">
+      <p style="margin:0; font-size:1.05rem;">Materiał dowodowy w sprawie został wyczerpany.<br>Proszę wszcząć nowe postępowanie pod inną sygnaturą.</p>
+    </div>
+    <p class="pouczenie">Pouczenie: wyczerpanie materiału dowodowego nie oznacza wyczerpania tematu. Dalsze czynności strony mogą prowadzić we własnym zakresie, bez udziału organu.</p>
+    <button class="przycisk" onclick="BPT.umorz()">Wszczynam nowe postępowanie</button>
+  </section>
+
+  <!-- ================= EKRAN: SPROSTOWANIE OMYŁKI ================= -->
+  <section class="ekran" id="ekran-sprostowanie">
+    <h2 class="tytul-czynnosci">Sprostowanie omyłki pisarskiej</h2>
+    <div class="metryka"><span>Sygn. akt <b class="m-sygnatura"></b></span><span>tryb naprawczy</span></div>
+    <div class="rubryka">
+      <span class="etykieta">Rubryka N — numer bieżącego pytania</span>
+      <div class="pole-nn">
+        <input class="nn" id="sprostowanie-nr" inputmode="numeric" maxlength="3" autocomplete="off">
+      </div>
+      <div class="blad" id="blad-sprostowania"></div>
+    </div>
+    <div class="rubryka">
+      <span class="etykieta">Rubryka R — rola strony po sprostowaniu</span>
+      <label style="display:block; padding:6px 0;"><input type="radio" name="sprostowanie-rola" value="indagujaca"> strona indagująca</label>
+      <label style="display:block; padding:6px 0;"><input type="radio" name="sprostowanie-rola" value="indagowana"> strona indagowana</label>
+    </div>
+    <p class="pouczenie">Pouczenie: sprostowania dokonuje się, gdy urządzenia stron wskazują różne numery pytań. Strony uzgadniają ustnie właściwy numer i rolę, po czym każda strona wprowadza sprostowanie na własnym urządzeniu. Licznik zmiany stron z urzędu ustala się na nowo według numeru pytania.</p>
+    <button class="przycisk" onclick="BPT.wykonajSprostowanie()">Zatwierdzam sprostowanie</button>
+    <div class="czynnosci"><button onclick="BPT.renderuj()">Odstępuję od sprostowania</button></div>
+  </section>
+
+  <!-- ================= EKRAN: UMORZENIE ================= -->
+  <section class="ekran" id="ekran-umorzenie">
+    <h2 class="tytul-czynnosci">Umorzenie postępowania</h2>
+    <div class="rubryka">
+      <span class="etykieta">Skutek czynności</span>
+      <p style="margin:0">Postępowanie ulega umorzeniu, a akta sprawy — zniszczeniu. Czynność jest nieodwracalna. Treści wypowiedziane w toku postępowania pozostają w pamięci stron, na co Biuro nie ma wpływu.</p>
+    </div>
+    <button class="przycisk czerwony" onclick="BPT.umorz()">Wnoszę o umorzenie</button>
+    <button class="przycisk drugorzedny" onclick="BPT.renderuj()">Cofam wniosek</button>
+  </section>
+
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   BIURO POSTĘPOWAŃ TOWARZYSKICH — logika
+   Zasada działania: dwa urządzenia nie komunikują się ze sobą.
+   Ta sama sygnatura (kategoria + wariant 01–99) daje to samo
+   ziarno PRNG, więc kolejność pytań i skład formularzy
+   odpowiedzi są identyczne na obu urządzeniach.
+   ============================================================ */
+
+/* ---------- Deterministyczny generator (mulberry32) ---------- */
+function mulberry32(ziarno){
+  let a = ziarno | 0;
+  return function(){
+    a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+/* Tasowanie Fishera–Yatesa na kopii tablicy, sterowane podanym PRNG */
+function tasuj(tablica, rnd){
+  const a = tablica.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(rnd() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+/* Ziarno bazowe sprawy: kategoria i wariant NN */
+function ziarnoSprawy(kat, nn){ return (kat * 7919 + nn * 104729 + 17) | 0; }
+/* Kolejność pytań w sprawie: pełna pula kategorii, tasowana z ziarna (shuffle-bag) */
+function kolejnoscPytan(kat, nn){
+  const indeksy = BANK[kat].map((_, i) => i);
+  return tasuj(indeksy, mulberry32(ziarnoSprawy(kat, nn)));
+}
+/* Formularz odpowiedzi dla pytania nr (indeks od 0):
+   do 2 odpowiedzi dedykowanych + uzupełnienie uniwersalnymi do 4,
+   wszystko deterministycznie z ziarna sprawy i numeru pytania. */
+function formularzOdpowiedzi(kat, nn, indeks){
+  const pytanie = BANK[kat][kolejnoscPytan(kat, nn)[indeks]];
+  const rnd = mulberry32((ziarnoSprawy(kat, nn) ^ Math.imul(indeks + 1, 2654435761)) | 0);
+  const dedykowane = tasuj(pytanie.a || [], rnd).slice(0, 2);
+  const uniwersalne = tasuj(UNIWERSALNE, rnd).slice(0, 4 - dedykowane.length);
+  return tasuj(dedykowane.concat(uniwersalne), rnd);
+}
+function trescPytania(kat, nn, indeks){
+  return BANK[kat][kolejnoscPytan(kat, nn)[indeks]].t;
+}
+
+/* ---------- Stan postępowania (localStorage) ---------- */
+const KLUCZ = "bpt-akta-v1";
+let akta = null; // bieżące akta sprawy albo null
+
+function zapisz(){ try{ localStorage.setItem(KLUCZ, JSON.stringify(akta)); }catch(e){} }
+function wczytaj(){
+  try{ return JSON.parse(localStorage.getItem(KLUCZ)); }catch(e){ return null; }
+}
+function zniszczAkta(){ akta = null; try{ localStorage.removeItem(KLUCZ); }catch(e){} }
+
+/* ---------- Obsługa ekranów ---------- */
+function pokaz(id){
+  document.querySelectorAll(".ekran").forEach(e => e.classList.remove("aktywny"));
+  document.getElementById(id).classList.add("aktywny");
+  window.scrollTo(0, 0);
+}
+function sygnatura(){ return akta.kat + "-" + String(akta.nn).padStart(2, "0"); }
+function uzupelnijMetryke(){
+  if(!akta) return;
+  document.querySelectorAll(".m-sygnatura").forEach(e => e.textContent = sygnatura());
+  document.querySelectorAll(".m-numer").forEach(e => e.textContent = akta.indeks + 1);
+}
+
+/* ---------- Pieczęć okrągła (SVG) ---------- */
+function pieczecSVG(rozmiar, idSuf){
+  const napis = "BIURO POSTĘPOWAŃ TOWARZYSKICH ★ ORGAN I INSTANCJI ★";
+  return '<svg class="pieczec pieczec-czerwona" width="'+rozmiar+'" height="'+rozmiar+'" viewBox="0 0 200 200" aria-hidden="true">' +
+    '<circle cx="100" cy="100" r="96" fill="none" stroke="currentColor" stroke-width="4"/>' +
+    '<circle cx="100" cy="100" r="70" fill="none" stroke="currentColor" stroke-width="1.5"/>' +
+    '<path id="luk-'+idSuf+'" d="M 100,100 m -83,0 a 83,83 0 1,1 166,0 a 83,83 0 1,1 -166,0" fill="none"/>' +
+    '<text fill="currentColor" font-size="14.5" font-family="Georgia, serif" letter-spacing="2.5">' +
+      '<textPath href="#luk-'+idSuf+'" startOffset="0">'+napis+'</textPath>' +
+    '</text>' +
+    '<text x="100" y="94" text-anchor="middle" fill="currentColor" font-size="34" font-weight="bold" font-family="Georgia, serif" letter-spacing="4">BPT</text>' +
+    '<text x="100" y="120" text-anchor="middle" fill="currentColor" font-size="11" font-family="Georgia, serif" letter-spacing="3">WYDZIAŁ I</text>' +
+    '</svg>';
+}
+
+/* ---------- Przebieg postępowania ---------- */
+const BPT = {
+
+  /* — ekran startowy — */
+  doStartu(){
+    const pole = document.getElementById("start-wznowienie");
+    const zapisane = wczytaj();
+    if(zapisane && typeof zapisane.kat === "number"){
+      akta = zapisane;
+      pole.innerHTML = '<button class="przycisk czerwony" onclick="BPT.renderuj()">Podejmuję zawieszone postępowanie — sygn. akt ' + sygnatura() + '</button>' +
+        '<p class="adnotacja" style="text-align:center">akta odnaleziono w archiwum urządzenia</p>';
+    } else {
+      pole.innerHTML = "";
+    }
+    pokaz("ekran-start");
+  },
+
+  /* — wszczęcie: wybór kategorii — */
+  trybDocelowy: "dwustronne",
+  wszczecie(){ BPT.trybDocelowy = "dwustronne"; BPT.pokazKategorie(); },
+  trybPilny(){ BPT.trybDocelowy = "pilny"; BPT.pokazKategorie(); },
+  pokazKategorie(){
+    const lista = document.getElementById("wykaz-kategorii");
+    lista.innerHTML = KATEGORIE.map(k =>
+      '<li><button onclick="BPT.wybierzKategorie(' + k.nr + ')">' +
+      '<span class="nr">' + k.nr + ' — </span><span class="nazwa">' + k.nazwa + '</span>' +
+      '<span class="zakres">' + k.zakres + '</span></button></li>'
+    ).join("");
+    pokaz("ekran-kategoria");
+  },
+
+  nowaKategoria: 1,
+  wybierzKategorie(nr){
+    BPT.nowaKategoria = nr;
+    if(BPT.trybDocelowy === "pilny"){
+      /* Tryb pilny: wariant losuje się z urzędu — sekwencja nie musi być
+         uzgadniana z drugim urządzeniem, bo urządzenie jest jedno. */
+      akta = { tryb:"pilny", kat:nr, nn:1 + Math.floor(Math.random()*99), indeks:0 };
+      zapisz();
+      BPT.renderuj();
+    } else {
+      document.getElementById("wariant-prefiks").textContent = nr + "-";
+      document.getElementById("pole-nn").value = "";
+      document.getElementById("blad-nn").textContent = "";
+      pokaz("ekran-wariant");
+      setTimeout(() => document.getElementById("pole-nn").focus(), 50);
+    }
+  },
+
+  zatwierdzNN(){
+    const surowe = document.getElementById("pole-nn").value.trim();
+    const nn = parseInt(surowe, 10);
+    if(!/^\d{1,2}$/.test(surowe) || isNaN(nn) || nn < 1 || nn > 99){
+      document.getElementById("blad-nn").textContent = "Wariant sprawy oznacza się liczbą od 01 do 99. Braki formalne wstrzymują bieg sprawy.";
+      return;
+    }
+    akta = { tryb:"dwustronne", kat:BPT.nowaKategoria, nn:nn, indeks:0, odNadania:0, rola:null, odslonieta:false, postanowienie:false };
+    zapisz();
+    document.getElementById("rola-sygnatura").textContent = sygnatura();
+    pokaz("ekran-rola");
+  },
+
+  wybierzRole(rola){
+    akta.rola = rola;
+    zapisz();
+    BPT.renderuj();
+  },
+
+  /* — główny rozdzielnik ekranów wg stanu akt — */
+  renderuj(){
+    if(!akta){ BPT.doStartu(); return; }
+    if(akta.tryb === "pilny"){ BPT.renderujPilny(); return; }
+    if(akta.rola === null){ document.getElementById("rola-sygnatura").textContent = sygnatura(); pokaz("ekran-rola"); return; }
+    const pula = kolejnoscPytan(akta.kat, akta.nn).length;
+    if(akta.indeks >= pula){ pokaz("ekran-wyczerpanie"); return; }
+    if(akta.postanowienie){ BPT.pokazPostanowienie(); return; }
+    uzupelnijMetryke();
+    if(akta.rola === "indagujaca"){
+      document.getElementById("pytanie-naglowek").textContent = "— pytanie nr " + (akta.indeks + 1) + " w sprawie " + sygnatura();
+      document.getElementById("pytanie-tresc").textContent = trescPytania(akta.kat, akta.nn, akta.indeks);
+      pokaz("ekran-pytanie");
+    } else {
+      if(akta.odslonieta){ BPT.renderujFormularz(); }
+      else { pokaz("ekran-oczekiwanie"); }
+    }
+  },
+
+  /* — strona indagowana: odsłonięcie formularza — */
+  przystapDoOdpowiedzi(){
+    akta.odslonieta = true;
+    zapisz();
+    BPT.renderujFormularz();
+  },
+  renderujFormularz(){
+    uzupelnijMetryke();
+    document.getElementById("odpowiedz-pytanie").textContent = trescPytania(akta.kat, akta.nn, akta.indeks);
+    const opcje = formularzOdpowiedzi(akta.kat, akta.nn, akta.indeks);
+    const litery = ["a", "b", "c", "d"];
+    document.getElementById("odpowiedz-opcje").innerHTML =
+      opcje.map((o, i) => '<li><span class="litera">' + litery[i] + ')</span><span>' + o + '</span></li>').join("") +
+      '<li class="wlasna"><span class="litera">e)</span><span><b>Odpowiedź własna strony</b>' +
+      '<span class="dopisek">strona odpowiada słowami niepochodzącymi z formularza; treść nie podlega protokołowaniu</span></span></li>';
+    document.getElementById("odpowiedz-uzupelnienie").style.display = "none";
+    pokaz("ekran-odpowiedz");
+  },
+  uzupelniam(){
+    /* Czynność bez skutków procesowych: organ cierpliwie czeka. */
+    document.getElementById("odpowiedz-uzupelnienie").style.display = "block";
+  },
+
+  /* — przejście do kolejnego pytania (obie strony, każda na swoim urządzeniu) — */
+  kolejnePytanie(){
+    akta.indeks += 1;
+    akta.odslonieta = false;
+    akta.odNadania += 1;
+    if(akta.odNadania >= 3){
+      /* Po trzech pytaniach w jedną stronę: zmiana stron z urzędu.
+         Oba urządzenia liczą niezależnie i dochodzą do tego samego wniosku. */
+      akta.postanowienie = true;
+    }
+    zapisz();
+    BPT.renderuj();
+  },
+
+  /* — postanowienie z urzędu — */
+  pokazPostanowienie(){
+    document.getElementById("postanowienie-pieczec").innerHTML = pieczecSVG(150, "postanowienie");
+    const nowaRola = (akta.rola === "indagujaca") ? "indagowanej" : "indagującej";
+    document.getElementById("postanowienie-pouczenie").textContent =
+      "Pouczenie: z chwilą przyjęcia postanowienia do wiadomości strona przyjmuje rolę strony " + nowaRola + ". Sprawa zachowuje sygnaturę i tok.";
+    pokaz("ekran-postanowienie");
+  },
+  przyjmujPostanowienie(){
+    akta.rola = (akta.rola === "indagujaca") ? "indagowana" : "indagujaca";
+    akta.odNadania = 0;
+    akta.postanowienie = false;
+    zapisz();
+    BPT.renderuj();
+  },
+
+  /* — zmiana stron na wniosek — */
+  ekranZmianyStron(nowaRola){
+    /* nowaRola: rola, którą przyjmie TA strona po zmianie */
+    BPT.rolaPoZmianie = nowaRola;
+    uzupelnijMetryke();
+    document.getElementById("zmiana-przycisk").textContent =
+      "Przyjmuję rolę strony " + (nowaRola === "indagujaca" ? "indagującej" : "indagowanej");
+    pokaz("ekran-zmiana");
+  },
+  rolaPoZmianie: null,
+  wykonajZmianeStron(){
+    akta.rola = BPT.rolaPoZmianie;
+    akta.odNadania = 0;
+    akta.indeks += 1;       /* sprawa biegnie dalej: następne pytanie z tej samej sekwencji */
+    akta.odslonieta = false;
+    akta.postanowienie = false;
+    zapisz();
+    BPT.renderuj();
+  },
+
+  /* — sprostowanie omyłki pisarskiej — */
+  ekranSprostowania(){
+    uzupelnijMetryke();
+    document.getElementById("sprostowanie-nr").value = akta.indeks + 1;
+    document.getElementById("blad-sprostowania").textContent = "";
+    document.querySelectorAll('input[name="sprostowanie-rola"]').forEach(r => { r.checked = (r.value === akta.rola); });
+    pokaz("ekran-sprostowanie");
+  },
+  wykonajSprostowanie(){
+    const pula = kolejnoscPytan(akta.kat, akta.nn).length;
+    const nr = parseInt(document.getElementById("sprostowanie-nr").value, 10);
+    const rola = (document.querySelector('input[name="sprostowanie-rola"]:checked') || {}).value;
+    if(isNaN(nr) || nr < 1 || nr > pula){
+      document.getElementById("blad-sprostowania").textContent = "Numer pytania w tej sprawie mieści się w przedziale od 1 do " + pula + ".";
+      return;
+    }
+    if(!rola){
+      document.getElementById("blad-sprostowania").textContent = "Proszę wskazać rolę strony po sprostowaniu.";
+      return;
+    }
+    akta.indeks = nr - 1;
+    akta.rola = rola;
+    akta.odNadania = (nr - 1) % 3;  /* licznik zmiany z urzędu ustalony na nowo wg numeru pytania */
+    akta.odslonieta = false;
+    akta.postanowienie = false;
+    zapisz();
+    BPT.renderuj();
+  },
+
+  /* — tryb pilny (jedno urządzenie) — */
+  renderujPilny(){
+    const pula = kolejnoscPytan(akta.kat, akta.nn).length;
+    if(akta.indeks >= pula){ pokaz("ekran-wyczerpanie"); return; }
+    uzupelnijMetryke();
+    document.getElementById("pilny-pytanie").textContent = trescPytania(akta.kat, akta.nn, akta.indeks);
+    const opcje = formularzOdpowiedzi(akta.kat, akta.nn, akta.indeks);
+    const litery = ["a", "b", "c", "d"];
+    document.getElementById("pilny-opcje").innerHTML =
+      opcje.map((o, i) => '<li><span class="litera">' + litery[i] + ')</span><span>' + o + '</span></li>').join("") +
+      '<li class="wlasna"><span class="litera">e)</span><span><b>Odpowiedź własna strony</b>' +
+      '<span class="dopisek">strona odpowiada słowami niepochodzącymi z formularza; treść nie podlega protokołowaniu</span></span></li>';
+    pokaz("ekran-pilny");
+  },
+  pilnyKolejny(){
+    akta.indeks += 1;
+    zapisz();
+    BPT.renderujPilny();
+  },
+
+  /* — umorzenie — */
+  ekranUmorzenia(){ pokaz("ekran-umorzenie"); },
+  umorz(){
+    zniszczAkta();
+    BPT.doStartu();
+  }
+};
+
+/* ---------- Wykaz kategorii ---------- */
+const KATEGORIE = [
+  { nr:1, nazwa:"Sprawy przeszłości",          zakres:"dzieciństwo, epizody wstydliwe, drogi życiowe" },
+  { nr:2, nazwa:"Sprawy smaku",                 zakres:"jedzenie, muzyka, spory zasadnicze (iPhone czy Android)" },
+  { nr:3, nazwa:"Sprawy hipotetyczne",          zakres:"co by było gdyby, wyspy bezludne, supermoce" },
+  { nr:4, nazwa:"Sprawy majątkowo-bytowe",      zakres:"praca, pieniądze, marzenia materialne" },
+  { nr:5, nazwa:"Sprawy podwyższonego ryzyka",  zakres:"pytania śmiałe i intymne — rejestr osób odważnych" }
+];
+
+/* ---------- Pula odpowiedzi uniwersalnych ---------- */
+const UNIWERSALNE = [
+  "Nie stwierdzono.",
+  "Stwierdzono. Szczegóły po drugim daniu.",
+  "Odmawiam odpowiedzi do czasu przybycia mojego pełnomocnika.",
+  "Nie przypominam sobie. Zastrzegam, że pamięć może powrócić.",
+  "To zależy od świadków.",
+  "Proszę powtórzyć pytanie w formie pisemnej.",
+  "Sprawa jest rozwojowa.",
+  "Zaprzeczam, z zastrzeżeniem późniejszego potwierdzenia.",
+  "Informacja objęta tajemnicą rodzinną.",
+  "Częściowo tak, w pozostałym zakresie nie.",
+  "Wnoszę o wyłączenie jawności.",
+  "Strona była wówczas niepełnoletnia.",
+  "Okoliczność powszechnie znana. Nie wymaga dowodu.",
+  "Tak, ale nie pod przysięgą.",
+  "Strona nie rozumie pytania i uważa to za okoliczność łagodzącą.",
+  "Odpowiedź znajduje się w aktach innej sprawy."
+];
+
+/* ---------- Bank pytań ----------
+   Klucz: numer kategorii. Każde pytanie: t — treść,
+   a — odpowiedzi dedykowane (opcjonalnie; formularz bierze do 2). */
+const BANK = {
+
+/* ===== 1. SPRAWY PRZESZŁOŚCI ===== */
+1: [
+ { t:"Proszę opisać okoliczności najdawniejszego wspomnienia strony. Wspomnienia cudze, przyswojone z opowieści rodzinnych, należy oznaczyć jako materiał z drugiej ręki.",
+   a:["Wspomnienie dotyczy przedszkola i do dziś budzi sprzeciw strony.","Materiał w całości z drugiej ręki. Strona osobiście nie pamięta niczego."] },
+ { t:"Proszę wskazać przezwisko noszone przez stronę w okresie szkolnym oraz określić, czy było zasłużone.",
+   a:["Przezwisko było zasłużone, lecz strona nie zamierza wyjaśniać dlaczego.","Strona do dziś używa tego przezwiska w wybranych kręgach."] },
+ { t:"Czy strona planowała w dzieciństwie inny zawód niż obecnie wykonywany? Proszę podać zawód planowany oraz wskazać moment porzucenia planu.",
+   a:["Strażak. Plan upadł z przyczyn niezależnych od strony.","Weterynarz — do czasu pierwszego kontaktu z rzeczywistym zwierzęciem."] },
+ { t:"Proszę wskazać najpoważniejsze przewinienie popełnione przez stronę przed ukończeniem dziesiątego roku życia.",
+   a:["Czyn został zatajony przed opiekunami i pozostaje zatajony do dziś.","Odpowiedzialność poniosło rodzeństwo strony."] },
+ { t:"Czy strona posiadała w dzieciństwie przyjaciela niewidzialnego? Jeżeli tak — proszę podać jego dane oraz okoliczności zakończenia znajomości.",
+   a:["Znajomość wygasła naturalnie. Strony pozostają w dobrych stosunkach.","Strona zaprzecza, choć świadkowie twierdzą inaczej."] },
+ { t:"Proszę opisać pierwszą samodzielnie zarobioną kwotę pieniężną oraz sposób jej roztrwonienia.",
+   a:["Kwota została roztrwoniona w całości w ciągu doby. Strona nie żałuje.","Kwota istnieje do dziś. Strona oszczędzała od zawsze i prosi o odnotowanie tego w aktach."] },
+ { t:"Proszę wskazać modę lub styl ubioru, którym strona uległa w przeszłości, a którego dokumentacja fotograficzna istnieje do dziś.",
+   a:["Dokumentacja istnieje i znajduje się w rękach matki strony.","Strona podjęła kroki w celu zniszczenia materiału. Kroki okazały się bezskuteczne."] },
+ { t:"Czy strona kiedykolwiek zbiegła z lekcji? Proszę opisać cel ucieczki oraz ocenić, czy był tego wart.",
+   a:["Cel był tego wart. Strona poszłaby ponownie.","Strona zbiegła do biblioteki, co sama uznaje za obciążające."] },
+ { t:"Proszę podać tytuł utworu muzycznego, którego strona słuchała w przeszłości namiętnie, a do którego dziś się nie przyznaje.",
+   a:["Utwór pozostaje na liście odtwarzania strony pod zmienioną nazwą.","Strona przyzna się wyłącznie w razie okazania dowodów."] },
+ { t:"Proszę opisać najdalszą podróż odbytą przez stronę przed osiągnięciem pełnoletności oraz jej skutki wychowawcze.",
+   a:["Skutki wychowawcze wystąpiły głównie po stronie opiekunów.","Podróż zakończyła się przed granicą województwa. Strona liczy ją mimo to."] },
+ { t:"Czy stronie zdarzyło się publicznie zapomnieć tekstu, roli lub przemówienia? Proszę wskazać rozmiar audytorium.",
+   a:["Audytorium liczyło całą szkołę. Strona pamięta każdą twarz.","Strona dokończyła improwizując i do dziś uważa, że nikt nie zauważył."] },
+ { t:"Proszę wskazać przedmiot szkolny, z którego strona osiągała wyniki najniższe, oraz przypisać winę.",
+   a:["Matematyka. Wina leży po stronie systemu.","Wychowanie fizyczne. Strona wnosi o odczytanie tego punktu szeptem."] },
+ { t:"Proszę opisać pierwszy telefon komórkowy strony oraz określić uczucia, jakie strona żywi do niego obecnie.",
+   a:["Nokia. Strona wspomina ją cieplej niż niektóre związki.","Telefon spoczywa w szufladzie i jest sprawny, w przeciwieństwie do telefonu obecnego."] },
+ { t:"Czy strona pamięta swój pierwszy adres poczty elektronicznej? Proszę przytoczyć go w całości, wraz z liczbami.",
+   a:["Adres zawierał słowo „sweet” i strona ma tego świadomość.","Adres istnieje i nadal odbiera pocztę, głównie reklamową."] },
+ { t:"Proszę wskazać najbardziej wstydliwy epizod z udziałem strony na uroczystości rodzinnej.",
+   a:["Epizod jest przywoływany co roku przy tym samym stole.","Strona była wówczas przekonana, że zachowuje się bez zarzutu."] },
+ { t:"Proszę opisać nauczyciela, którego strona wspomina najżywiej, oraz określić charakter tych wspomnień: wdzięczność czy uraz.",
+   a:["Wdzięczność, choć strona zrozumiała to z opóźnieniem dwudziestoletnim.","Uraz. Strona prosi o niepodawanie inicjałów do protokołu."] },
+ { t:"Czy strona prowadziła w przeszłości pamiętnik? Jeżeli tak — proszę wskazać jego obecne miejsce przechowywania.",
+   a:["Pamiętnik istnieje. Jego lokalizacja stanowi tajemnicę stanu.","Pamiętnik został zniszczony w trybie pilnym po jednej z lektur."] },
+ { t:"Proszę wymienić potrawę okresu dzieciństwa, której strona nie tknie do końca życia, wraz z uzasadnieniem.",
+   a:["Szpinak podawany pod przymusem instytucjonalnym.","Potrawa wracała na stół do skutku. Skutek nie nastąpił."] },
+ { t:"Proszę wskazać zabawkę, o którą strona toczyła w dzieciństwie spór z rodzeństwem lub rówieśnikami, oraz podać rozstrzygnięcie sporu.",
+   a:["Spór rozstrzygnięto siłowo. Strona odmawia wskazania zwycięzcy.","Przedmiot sporu został skonfiskowany przez organ nadrzędny, to jest matkę."] },
+ { t:"Czy strona kiedykolwiek przypisała sobie cudzą zasługę? Sprawa uległa przedawnieniu, co nie zwalnia z odpowiedzi.",
+   a:["Raz. Osoba poszkodowana siedzi być może naprzeciwko podobnych pytań do dziś.","Strona przypisała sobie cudzą zasługę w pracy zbiorowej i nadal zbiera owoce."] },
+ { t:"Proszę opisać okoliczności wykonania fotografii do pierwszego dokumentu tożsamości strony oraz ocenić jej jakość.",
+   a:["Fotografia obciąża stronę do dziś.","Strona wyglądała lepiej niż kiedykolwiek później, co uznaje za złośliwość losu."] },
+ { t:"Proszę wskazać decyzję życiową, którą strona podjęła rzutem monetą, w emocjach lub na złość osobie trzeciej.",
+   a:["Decyzja okazała się trafna, co strona ukrywa przed osobą trzecią.","Strona podtrzymuje, że to nie były emocje, tylko intuicja."] },
+ { t:"Czy strona nosiła w przeszłości fryzurę, za którą dziś poniosłaby odpowiedzialność dyscyplinarną? Proszę o opis techniczny.",
+   a:["Grzywka wykonana samodzielnie, nożyczkami do papieru.","Fryzura była zgodna z duchem epoki. Epoka nie broni się przed sądem."] },
+ { t:"Proszę podać imię pierwszej sympatii strony oraz określić, czy osoba ta była świadoma swojego statusu.",
+   a:["Osoba nie była świadoma. Stan ten trwa do dziś.","Osoba była świadoma i korzystała ze swojego statusu procesowo."] },
+ { t:"Proszę opisać najpoważniejszą szkodę materialną wyrządzoną przez stronę w gospodarstwie domowym rodziców oraz przyjętą linię obrony.",
+   a:["Linia obrony brzmiała: samo się. Utrzymywana do dziś.","Szkoda wyszła na jaw po latach, przy okazji remontu."] },
+ { t:"Czy strona śpiewała kiedykolwiek publicznie poza chórem? Proszę wskazać repertuar oraz reakcję zgromadzonych.",
+   a:["Repertuar biesiadny. Zgromadzeni przyłączyli się w celach ratunkowych.","Zdarzenie miało miejsce na karaoke i zostało utrwalone cyfrowo."] },
+ { t:"Proszę wskazać książkę lub film z okresu dojrzewania, które ukształtowały stronę w stopniu — zdaniem otoczenia — nadmiernym.",
+   a:["Strona cytowała dzieło w rozmowach codziennych przez okres dwóch lat.","Strona ubierała się jak bohater dzieła. Istnieją fotografie."] },
+ { t:"Proszę opisać pierwszą noc spędzoną poza domem rodzinnym bez opieki oraz ocenić stopień przygotowania logistycznego strony.",
+   a:["Przygotowanie logistyczne: brak. Entuzjazm: pełny.","Strona wróciła przed czasem, o czym nie poinformowała rówieśników."] },
+ { t:"Czy strona kolekcjonowała w przeszłości przedmioty uznawane obecnie za bezwartościowe? Proszę oszacować wartość sentymentalną zbioru.",
+   a:["Karteczki. Zbiór został bezprawnie zbyty przez matkę strony.","Zbiór kapsli. Wartość sentymentalna: niewyceniana, bo bezcenna."] },
+ { t:"Proszę wskazać wydarzenie z przeszłości, które strona opowiada na każdym spotkaniu towarzyskim, a następnie opowiedzieć je również teraz.",
+   a:["Strona uprzedza, że opowieść trwa dłużej niż niniejsze postępowanie.","Świadkowie znają opowieść na pamięć i poprawiają szczegóły."] }
+],
+
+/* ===== 2. SPRAWY SMAKU ===== */
+2: [
+ { t:"Proszę wskazać, którego z systemów strona używa z własnej woli: iPhone czy Android. Odpowiedź „służbowo” nie zwalnia z odpowiedzi.",
+   a:["iPhone. Strona prosi o niewyciąganie wniosków.","Android. Strona żąda wpisania tego do protokołu z dumą."] },
+ { t:"Ananas na pizzy: proszę zająć stanowisko. Wstrzymanie się od głosu nie jest przewidziane w formularzu.",
+   a:["Dopuszczalny, lecz wyłącznie u innych.","Stanowisko strony jest twarde i nie podlega negocjacjom."] },
+ { t:"Proszę wskazać utwór muzyczny, którego strona słucha wyłącznie na osobności, przy zamkniętych oknach.",
+   a:["Utwór pochodzi z lat dziewięćdziesiątych i strona zna układ taneczny.","Strona ujawni tytuł wyłącznie nuceniem."] },
+ { t:"Czy strona słodzi? Proszę podać substancję, liczbę jednostek oraz okres, od którego strona kłamie w tej sprawie.",
+   a:["Dwie łyżeczki. W dokumentach: pół.","Strona nie słodzi i pilnuje, żeby wszyscy o tym wiedzieli."] },
+ { t:"Proszę uszeregować: góry, morze, jezioro, miasto — od najbardziej do najmniej pożądanego. Kolejność alfabetyczna zostanie potraktowana jako uchylenie się od odpowiedzi.",
+   a:["Na pierwszym miejscu jezioro, z uwagi na niższą frekwencję ludzką.","Miasto, miasto, miasto oraz — w ostateczności — miasto."] },
+ { t:"Proszę wskazać film, przy którym strona płakała, oraz określić, czy zdarzenie miało świadków.",
+   a:["Świadków nie było. Strona zaprzeczy wszystkiemu.","Król Lew. Strona nie uważa tego za okoliczność obciążającą."] },
+ { t:"Kawa czy herbata? Proszę również oświadczyć, co strona sądzi o osobach dokonujących wyboru przeciwnego.",
+   a:["Kawa. Osoby pijące herbatę strona uważa za spokojniejsze i podejrzane.","Herbata. Kawę strona pije wyłącznie w celach obronnych, przed południem."] },
+ { t:"Proszę wymienić potrawę, którą strona zamawia zawsze i wszędzie, wbrew namowom otoczenia do rozwoju.",
+   a:["Ta sama pozycja od lat. Karta dań służy stronie wyłącznie jako rekwizyt.","Strona raz zamówiła co innego i do dziś tego żałuje."] },
+ { t:"Czy strona czyta zakończenia książek przed ich rozpoczęciem? Odpowiedź twierdząca nie podlega karze, lecz podlega ocenie.",
+   a:["Tak. Strona nie lubi być zaskakiwana przez literaturę.","Nie, natomiast strona czyta ostatnie zdanie. To co innego."] },
+ { t:"Proszę wskazać serial obejrzany przez stronę w całości więcej niż dwukrotnie oraz uzasadnić gospodarność tej decyzji.",
+   a:["Serial pełni w gospodarstwie strony funkcję tła oraz kołysanki.","Za trzecim razem strona zwracała uwagę na drugi plan. Tak brzmi oficjalna wersja."] },
+ { t:"Proszę zająć stanowisko w sprawie ketchupu jako dodatku do dań, do których — zdaniem ogółu — nie pasuje.",
+   a:["Strona dodaje ketchup do wszystkiego i nie uznaje zwierzchności ogółu.","Strona dopuszcza ketchup wyłącznie w warunkach domowych, bez świadków."] },
+ { t:"Proszę wskazać markę odzieżową, obuwniczą lub spożywczą, wobec której strona odczuwa przywiązanie niedające się racjonalnie uzasadnić.",
+   a:["Przywiązanie trwa od czasów szkolnych i przeszło na kolejne pokolenie.","Strona kupuje ten sam model od lat, na zapas, z obawy przed zmianą."] },
+ { t:"Zima czy lato? W odpowiedzi proszę uwzględnić koszty ogrzewania i klimatyzacji.",
+   a:["Lato, z zastrzeżeniem, że strona spędza je w cieniu i narzeka.","Zima. Stronę uspokaja, że wszyscy siedzą w domach."] },
+ { t:"Proszę wymienić trzy utwory na ścieżkę dźwiękową filmu o życiu strony oraz wskazać scenę, w której rozbrzmiewa pierwszy z nich.",
+   a:["Pierwszy utwór rozbrzmiewa w scenie spóźnienia. Film otwiera spóźnienie.","Strona zastrzega, że film byłby długi, a przerwa — obowiązkowa."] },
+ { t:"Pierogi: na słodko czy wytrawnie? Odpowiedź „i tak, i tak” zostanie odnotowana jako próba przypodobania się organowi.",
+   a:["Wyłącznie wytrawnie. Pierogi na słodko to deser w przebraniu.","Na słodko, ze śmietaną, zgodnie z tradycją domu strony. Dom się nie mylił."] },
+ { t:"Proszę wskazać książkę, którą strona deklaruje jako przeczytaną, choć stan faktyczny jest odmienny.",
+   a:["Lalka. Strona zna streszczenie i uważa je za wystarczające.","Strona przeczytała połowę i od lat mówi o niej jak o całości."] },
+ { t:"Proszę określić właściwą godzinę rozpoczęcia dnia oraz stosunek strony do osób twierdzących inaczej.",
+   a:["Szósta rano. Osoby śpiące dłużej strona obserwuje z niepokojem.","Dzień zaczyna się, gdy strona uzna, że się zaczął. Zwykle koło dziesiątej."] },
+ { t:"Muzyka podczas pracy: tak czy nie? Jeżeli tak — proszę ujawnić gatunek, również jeżeli jest to muzyka z gier komputerowych.",
+   a:["Muzyka z gier. Strona podkreśla, że została skomponowana do skupienia.","Ten sam utwór w pętli, godzinami. Otoczenie strony złożyło skargę."] },
+ { t:"Proszę wskazać danie kuchni zagranicznej, które strona uważa za przereklamowane, ze świadomością konsekwencji towarzyskich.",
+   a:["Sushi. Strona podtrzymuje mimo nacisków.","Strona wskazuje danie, którego nazwy nie potrafi wymówić, co uważa za argument."] },
+ { t:"Czy strona rozmawia w kinie? Proszę odpowiedzieć zgodnie z prawdą; sala kinowa dysponuje świadkami.",
+   a:["Strona zadaje pytania do fabuły osobie towarzyszącej. Osoba fabuły nie zna.","Strona nie rozmawia, natomiast komentuje szeptem. To co innego."] },
+ { t:"Proszę podać liczbę poduszek, na których śpi strona, oraz liczbę poduszek pełniących funkcje wyłącznie reprezentacyjne.",
+   a:["Jedna do spania, sześć reprezentacyjnych. Proporcja nie podlega dyskusji.","Poduszki reprezentacyjne zdejmuje się na noc i układa z powrotem o świcie. Tak wygląda życie strony."] },
+ { t:"Proszę wskazać kolor, którego strona nie założy pod żadnym pozorem, oraz osobę, która ją do niego zraziła.",
+   a:["Kolor został spalony na uroczystości rodzinnej w latach ubiegłych.","Strona nosi wyłącznie trzy kolory i uważa to za dojrzałość."] },
+ { t:"Papier toaletowy: końcówka od ściany czy od strony użytkownika? Organ informuje, że istnieje odpowiedź poprawna.",
+   a:["Od strony użytkownika, zgodnie z patentem z 1891 roku. Strona zna patent.","Strona poprawia ustawienie rolki w cudzych domach. Dyskretnie."] },
+ { t:"Proszę wskazać święto, którego strona nie znosi, wraz z krótkim rysem historycznym niechęci.",
+   a:["Sylwester. Przymus radości o wyznaczonej godzinie budzi opór strony.","Niechęć sięga jednego konkretnego roku. Strona nie rozwinie wątku."] },
+ { t:"Czy strona podjada frytki osoby towarzyszącej po uprzednim oświadczeniu „ja nie chcę frytek”? Pytanie ma charakter diagnostyczny.",
+   a:["Tak. Frytki osoby towarzyszącej stanowią wspólność majątkową.","Strona zamawia własne, a następnie podjada cudze. Dla porównania."] },
+ { t:"Proszę wskazać zapach, który strona uznaje za zapach dzieciństwa, oraz zapach, którego nie toleruje w środkach transportu.",
+   a:["Zapach dzieciństwa: obiad u babci. Zapach nietolerowany: cudzy obiad w pociągu.","Strona wskazuje ten sam zapach w obu rubrykach i prosi o zrozumienie."] },
+ { t:"Telefon podczas posiłku: proszę określić praktykę strony oraz praktykę, którą strona deklaruje publicznie.",
+   a:["Deklaracja: nigdy. Praktyka: telefon leży ekranem do dołu i czeka.","Strona wymaga odkładania telefonów od innych. Od siebie — rzadziej."] },
+ { t:"Proszę wymienić gatunek filmowy, po którym strona nie sypia, oraz gatunek, przy którym sypia najlepiej.",
+   a:["Nie sypia po horrorach, sypia przy kinie przygodowym, od drugiej sceny.","Strona zasypia przy każdym filmie po godzinie dwudziestej pierwszej. Gatunek bez znaczenia."] },
+ { t:"Proszę wskazać potrawę, którą strona przyrządza na tyle dobrze, że gotowa jest przyjąć zamówienie od strony przeciwnej.",
+   a:["Jajecznica. Strona przyjmuje zamówienia od zaraz.","Popisowe danie strony wymaga doby przygotowań i publiczności."] },
+ { t:"Krem czekoladowy: łyżką prosto ze słoika — tak czy nie? Organ przypomina o odpowiedzialności za składanie fałszywych oświadczeń.",
+   a:["Tak, przy otwartej lodówce, w świetle jej lampki.","Nie. W gospodarstwie strony słoik nie dożywa stanu, w którym byłoby to możliwe."] },
+ { t:"Proszę wskazać aplikację, w której strona spędza czas w sposób, którego nie potrafi racjonalnie uzasadnić.",
+   a:["Strona ogląda w niej cudze remonty. Sama nie remontuje.","Aplikacja została odinstalowana trzykrotnie. Obecnie jest zainstalowana."] }
+],
+
+/* ===== 3. SPRAWY HIPOTETYCZNE ===== */
+3: [
+ { t:"W przypadku przyznania stronie jednej supermocy — proszę wskazać, którą strona zataiłaby przed otoczeniem i dlaczego.",
+   a:["Czytanie w myślach. Ujawnienie zakończyłoby wszystkie znajomości strony.","Niewidzialność. Strona odmawia podania zastosowań."] },
+ { t:"Proszę wskazać trzy przedmioty zabierane na bezludną wyspę, przy czym co najmniej jeden musi być niepraktyczny.",
+   a:["Nóż, krzesiwo oraz poduszka reprezentacyjna.","Strona zabiera trzy przedmioty niepraktyczne i liczy na szybki ratunek."] },
+ { t:"W razie wygranej znacznej kwoty pieniężnej — proszę wskazać pierwszą osobę, której strona by o tym nie powiedziała.",
+   a:["Nikomu. Strona zniknęłaby na sześć do ośmiu tygodni.","Osoba ta wie o wszystkim pierwsza, dlatego tym razem będzie ostatnia."] },
+ { t:"Gdyby strona mogła cofnąć się o dziesięć lat z zachowaniem obecnej wiedzy — proszę wskazać pierwszą czynność, jakiej by dokonała.",
+   a:["Zakup pewnych walorów. Strona nie sprecyzuje jakich, z ostrożności.","Strona odbyłaby jedną rozmowę, na którą dziesięć lat temu zabrakło odwagi."] },
+ { t:"Proszę wskazać zwierzę, którym strona jest zgodnie ze swoim charakterem, oraz zwierzę, którym chciałaby być. Rozbieżność należy uzasadnić.",
+   a:["Jest chomikiem, chciałaby być sokołem. Uzasadnienie zbędne.","Strona jest kotem i chciałaby być kotem. Wniosek o zamknięcie wątku."] },
+ { t:"W przypadku obowiązku spożywania jednej potrawy do końca życia — proszę wskazać potrawę oraz przewidywany moment załamania.",
+   a:["Pierogi. Załamanie: rok trzeci, przy lepieniu.","Strona wybiera zupę pomidorową i twierdzi, że załamanie nie nastąpi. Organ wątpi."] },
+ { t:"Gdyby strona mogła zadać jedno pytanie osobie zmarłej lub historycznej — proszę wskazać adresata oraz treść pytania.",
+   a:["Adresat: babcia strony. Treść: przepis, którego nikt nie zapisał.","Pytanie zostałoby zadane osobie historycznej i brzmiałoby: po co."] },
+ { t:"Czy strona wolałaby umieć latać, czy pozostawać niewidzialną? Organ odnotowuje, że wybór drugi bywa oceniany surowiej.",
+   a:["Latać, w celu omijania korków oraz ludzi.","Niewidzialność, wyłącznie do wychodzenia z imprez bez pożegnań."] },
+ { t:"W razie konieczności zmiany imienia — proszę podać imię wybrane oraz imiona odrzucone w toku rozważań.",
+   a:["Strona nosi wybrane imię w internecie od lat.","Strona zmieniłaby wyłącznie nazwisko. To osobna sprawa i osobny formularz."] },
+ { t:"Gdyby życie strony sfilmowano — proszę wskazać odtwórcę roli głównej oraz odnieść się do rozbieżności w wyglądzie.",
+   a:["Rozbieżność w wyglądzie działa na korzyść filmu.","Strona zagrałaby siebie osobiście. Nikt inny nie udźwignie materiału."] },
+ { t:"Proszę opisać, co strona uczyniłaby w ciągu doby wolnej od wszelkich konsekwencji. Odpowiedź może zostać użyta przeciwko stronie.",
+   a:["Strona wskazuje czynności z zakresu ruchu drogowego i fryzjerstwa.","Strona mówiłaby wszystkim prawdę. Przez całą dobę."] },
+ { t:"W przypadku możliwości biegłego opanowania jednej umiejętności bez nauki — proszę wskazać umiejętność oraz dotychczasowe nieudane podejścia.",
+   a:["Języki obce. Podejść: cztery, wszystkie zakończone na lekcji trzeciej.","Gra na instrumencie. Instrument oczekuje w domu strony od lat, strojony nadzieją."] },
+ { t:"Gdyby strona kierowała państwem przez jeden dzień — proszę wskazać pierwszy dekret. Dekrety o dniach wolnych punktuje się niżej z uwagi na powtarzalność.",
+   a:["Dekret o ciszy w środkach transportu publicznego, z rygorem natychmiastowym.","Dekret o obowiązkowej drzemce. Strona przyjmuje niższą punktację z podniesionym czołem."] },
+ { t:"Proszę wskazać epokę historyczną, w której strona chciałaby żyć, po uwzględnieniu stanu ówczesnej stomatologii.",
+   a:["Po uwzględnieniu stomatologii strona pozostaje przy epoce obecnej.","Dwudziestolecie międzywojenne, od strony kawiarni, nie okopów."] },
+ { t:"W razie apokalipsy zombie — proszę wskazać osobę z otoczenia przyjmowaną do drużyny w pierwszej kolejności oraz osobę pozostawianą na straty.",
+   a:["Do drużyny: osoba, która wszystko naprawi. Na straty: osoba, która wszystko skomentuje.","Strona przyjmuje wyłącznie osoby wolniejsze od siebie w biegu."] },
+ { t:"Gdyby zwierzęta mówiły — proszę wskazać gatunek, który zdaniem strony okazałby się najbardziej nieuprzejmy.",
+   a:["Koty. Odpowiedź nie wymaga uzasadnienia.","Gęsi. One już teraz próbują."] },
+ { t:"Proszę wskazać miesięczną kwotę, za którą strona zgodziłaby się trwale zrezygnować z internetu. Kwoty poniżej średniej krajowej budzą podejrzenia organu.",
+   a:["Kwota istnieje, lecz rośnie z każdą dobą namysłu.","Strona zrezygnowałaby bezpłatnie, o czym informuje w internecie regularnie."] },
+ { t:"W przypadku możliwości poznania daty własnej śmierci — czy strona chciałaby ją znać? Proszę uzasadnić, z uwzględnieniem planowania urlopów.",
+   a:["Tak, wyłącznie w celu złożenia wniosków urlopowych z wyprzedzeniem.","Nie. Strona nie odbiera nawet wyników badań."] },
+ { t:"Gdyby strona mogła usunąć jeden wynalazek z dziejów ludzkości — proszę wskazać wynalazek. Organ uprzedza: usunięcie budzika nie cofnie obowiązków.",
+   a:["Powiadomienia. Wyłącznie powiadomienia, nie telefon.","Elektryczna hulajnoga. Strona prosi o wykonanie postanowienia w trybie natychmiastowym."] },
+ { t:"Proszę wskazać świat fikcyjny, do którego strona przeprowadziłaby się na stałe, po uwzględnieniu tamtejszej umieralności.",
+   a:["Świat wybrany przez stronę nie przewiduje umieralności postaci drugoplanowych, a strona planuje pozostać drugoplanową.","Po uwzględnieniu umieralności strona wybiera świat kreskówek."] },
+ { t:"W razie zamiany ciałami z osobą obecną — proszę wskazać pierwszą czynność dokonaną w cudzym ciele. Ocena etyczna należy do strony przeciwnej.",
+   a:["Przegląd lodówki, następnie przegląd telefonu, następnie zaprzeczanie.","Strona sprawdziłaby wyłącznie, jak to jest być wyższym."] },
+ { t:"Gdyby strona mogła czytać w myślach — proszę wskazać, czyje myśli sprawdziłaby w pierwszej kolejności: przełożonego, rodzica czy partnera. Kolejność ma znaczenie dowodowe.",
+   a:["Przełożonego, w celach czysto zawodowych. Tak brzmi wersja oficjalna.","Nikogo. Strona zna te myśli i właśnie dlatego dobrze śpi."] },
+ { t:"Proszę wskazać dekadę życia, którą strona przeżyłaby ponownie bez zmian, oraz dekadę — wyłącznie ze zmianami.",
+   a:["Bez zmian: żadna. Ze zmianami: wszystkie. Strona prosi o kolejne pytanie.","Strona wskazuje tę samą dekadę w obu rubrykach i nie widzi sprzeczności."] },
+ { t:"W przypadku otrzymania biletu w jedną stronę na Marsa — proszę określić gotowość do wyjazdu oraz listę osób, które przyspieszyłyby decyzję.",
+   a:["Gotowość: pełna. Lista osób: do wglądu po odlocie.","Strona odmawia. Na Marsie nie ma pierogów."] },
+ { t:"Gdyby strona musiała do końca życia występować w stroju jednej postaci — proszę wskazać postać, z uwzględnieniem wygody i prania.",
+   a:["Postać w piżamie. Strona wybiera strategicznie.","Wybór padł na pelerynę. Pranie peleryny to koszt godności, który strona poniesie."] },
+ { t:"Proszę wskazać supermoc najbardziej bezużyteczną, jaką strona potrafi wymyślić. Organ prowadzi rejestr; obecny rekord to podgrzewanie zupy o jeden stopień.",
+   a:["Zdolność otwierania drzwi, które i tak są otwarte.","Umiejętność przewidywania pogody wczorajszej."] },
+ { t:"W razie obowiązku nauczania jednego przedmiotu w szkole — proszę wskazać przedmiot oraz przewidywany stosunek młodzieży do strony.",
+   a:["Przedmiot: życie codzienne. Stosunek młodzieży: politowanie.","Strona uczyłaby matematyki i byłaby tym nauczycielem, o którym się potem opowiada. Nie sprecyzowano, jak."] },
+ { t:"Gdyby doba liczyła dwadzieścia pięć godzin — proszę wskazać przeznaczenie dodatkowej godziny. Odpowiedź „sen” podlega weryfikacji.",
+   a:["Sen. Strona oczekuje weryfikacji i się jej nie boi.","Godzina zostałaby zmarnowana tak samo jak pozostałe dwadzieścia cztery, lecz z rozmachem."] },
+ { t:"Proszę wskazać jedną poprawkę do praw fizyki oraz przewidzieć pierwszą katastrofę z niej wynikłą.",
+   a:["Zniesienie grawitacji w godzinach porannych. Katastrofa: kawa.","Strona nie zmieniałaby praw fizyki, ma z nią dobre stosunki."] },
+ { t:"W przypadku możliwości rozmowy ze sobą sprzed piętnastu lat — proszę streścić przekaz w jednym zdaniu. Zdania wielokrotnie złożone są dopuszczalne.",
+   a:["Kup mieszkanie, nie kupuj tamtej kurtki, reszta się ułoży.","Osoba sprzed piętnastu lat nie posłucha. Strona ją zna."] }
+],
+
+/* ===== 4. SPRAWY MAJĄTKOWO-BYTOWE ===== */
+4: [
+ { t:"Proszę wskazać pierwszą pracę zarobkową strony oraz wysokość wynagrodzenia, w celach wyłącznie statystycznych.",
+   a:["Zbiór owoców sezonowych. Wynagrodzenie zjedzono na miejscu.","Roznoszenie ulotek. Część nakładu odnaleziono po latach w krzakach; strona odmawia komentarza."] },
+ { t:"Proszę opisać marzenie materialne strony, którego strona się wstydzi, ze wskazaniem przyczyn wstydu.",
+   a:["Przedmiot jest duży, drogi i całkowicie zbędny. Strona pragnie go od lat.","Strona wstydzi się nie marzenia, lecz jego ceny."] },
+ { t:"Czy strona zna miesięczną sumę swoich subskrypcji? Proszę podać liczbę subskrypcji, o których strona zapomniała.",
+   a:["Dwie subskrypcje wyszły na jaw dopiero przy niniejszym pytaniu.","Strona płaci za trzy serwisy, ogląda jeden, planuje oglądać wszystkie."] },
+ { t:"Proszę wskazać przedmiot w gospodarstwie domowym, którego cena zakupu pozostaje zatajona przed domownikami.",
+   a:["Przedmiot stoi na widoku. Cena leży głęboko.","Domownicy znają cenę pomniejszoną o czterdzieści procent."] },
+ { t:"W razie otrzymania nagłej premii rocznej — proszę wskazać przeznaczenie deklarowane oraz przeznaczenie faktyczne.",
+   a:["Deklaracja: oszczędności. Fakt: koszyk zakupowy czekał gotowy.","Przeznaczenie deklarowane i faktyczne są zbieżne. Strona prosi o odnotowanie tego rzadkiego zjawiska."] },
+ { t:"Proszę określić stosunek strony do zakupów nietrafionych: czy strona dokonuje zwrotów, czy przechowuje przedmioty jako wyrzut sumienia.",
+   a:["Przedmioty oczekują na zwrot do upływu terminu, po czym przechodzą w stan wyrzutu.","Strona zwraca wszystko. Kurierzy znają stronę z imienia."] },
+ { t:"Proszę wskazać zawód wykonywany, gdyby pieniądze nie grały roli, oraz zawód — gdyby grały rolę wyłączną.",
+   a:["Bez pieniędzy: bibliotekarz. Dla pieniędzy: strona woli nie wiedzieć, do czego byłaby zdolna.","W obu rubrykach ten sam zawód. Strona wnosi o uznanie tego za sukces życiowy."] },
+ { t:"Czy strona się targuje? Proszę wskazać największy sukces negocjacyjny wraz z kwotą.",
+   a:["Strona raz wynegocjowała rabat i opowiada o tym do dziś. Kwota: siedem złotych.","Strona nie targuje się z zasady, po czym w domu przelicza, ile straciła."] },
+ { t:"Proszę opisać najbardziej nietrafiony zakup strony powyżej stu złotych oraz jego obecne miejsce przechowywania.",
+   a:["Przedmiot znajduje się w szafie i patrzy na stronę z wyrzutem.","Przedmiot przekazano osobie trzeciej pod pozorem prezentu."] },
+ { t:"Proszę wskazać rzecz, na którą strona żałuje pieniędzy mimo ich posiadania, oraz rzecz, na którą nie żałuje mimo ich braku.",
+   a:["Żałuje na skarpety. Nie żałuje na książki, których nie czyta.","Obie rubryki wypełnia jedzenie na mieście, zależnie od dnia miesiąca."] },
+ { t:"Emerytura: czy strona posiada plan? Odpowiedź „jakoś to będzie” należy złożyć na piśmie.",
+   a:["Plan strony zakłada pracę do setki i pogodę ducha.","Strona posiada plan, arkusz kalkulacyjny oraz niepokój."] },
+ { t:"Czy strona sprawdza ceny w innych sklepach po dokonaniu zakupu, ze świadomością, że wiedza ta niczemu już nie służy?",
+   a:["Sprawdza. Cierpienie jest częścią procedury.","Strona zaprzestała po zdarzeniu, o którym nie chce mówić."] },
+ { t:"Proszę opisać wymarzone mieszkanie lub dom strony, z pominięciem kwestii wykonalności finansowej, którą odnotowano z urzędu.",
+   a:["Dom z biblioteką i widokiem na brak sąsiadów.","Strona opisuje mieszkanie obecne, powiększone o jeden pokój i ciszę."] },
+ { t:"Czy strona pożyczyła kiedykolwiek środki, których nie odzyskała? Proszę podać kwotę oraz aktualny stan relacji z dłużnikiem.",
+   a:["Kwota: znaczna. Relacja: świąteczna, to jest ograniczona do życzeń.","Strona umorzyła dług jednostronnie, dla własnego spokoju. Dłużnik o tym nie wie."] },
+ { t:"Proszę wskazać usługę, za którą strona płaci, choć mogłaby wykonać czynność samodzielnie, oraz uzasadnić to zmęczeniem.",
+   a:["Myjnia. Strona posiada wiadro i godność, korzysta z myjni.","Strona płaci za dostawę z lokalu położonego w zasięgu wzroku."] },
+ { t:"Proszę wskazać kwotę, od której strona schyla się po monetę na chodniku, z uwzględnieniem obecności świadków.",
+   a:["Strona schyla się od jednego grosza i nie widzi w tym nic zdrożnego.","Wysokość kwoty zależy od stanu kolan i liczby świadków."] },
+ { t:"Wesele, remont czy podróż życia — proszę uszeregować według gotowości strony do zaciągnięcia kredytu.",
+   a:["Kredyt wyłącznie na remont. Wesele i podróż: za gotówkę lub wcale.","Strona nie zaciąga kredytów na radość. Na kafelki — tak."] },
+ { t:"Proszę wskazać przedmiot zakupiony „na zapas” w ilości przekraczającej przewidywaną długość życia strony.",
+   a:["Baterie. Zapas obejmuje również urządzenia, których strona nie posiada.","Torebki herbaty w liczbie uniemożliwiającej podanie liczby."] },
+ { t:"Czy strona zna stan swojego konta z dokładnością do stu złotych? Sprawdzenie w trakcie odpowiedzi zostanie odnotowane.",
+   a:["Strona zna stan konta z dokładnością do nastroju.","Tak, z dokładnością do złotówki. Strona sprawdza go częściej niż pogodę."] },
+ { t:"Proszę opisać najdroższą rzecz zgubioną przez stronę oraz wersję zdarzeń przedstawioną domownikom.",
+   a:["Wersja domowa zakłada kradzież. Wersja rzeczywista — ławkę w parku.","Rzecz odnalazła się po zakupie nowej. Obie są w użyciu, na zmianę, z poczucia winy."] },
+ { t:"Proszę wskazać markę lub produkt, za który strona przepłaca świadomie i z premedytacją.",
+   a:["Kawa z lokalu, w którym znają imię strony. Strona płaci za imię.","Strona przepłaca i nazywa to jakością życia. Księgowa strony nazywa to inaczej."] },
+ { t:"Zrzutki i składki: proszę określić, czy strona dopłaca równo, zaokrągla w dół, czy „miała wtedy tylko kartę”.",
+   a:["Strona dopłaca równo i pamięta, kto nie dopłacił. Latami.","Strona organizuje zrzutki, co uważa za wkład niepieniężny."] },
+ { t:"Proszę wskazać, co strona gromadzi obecnie, wliczając torby na torby oraz słoiki po słoikach.",
+   a:["Torba z torbami osiągnęła pojemność krytyczną i pączkuje.","Kable. Do urządzeń, które opuściły gospodarstwo przed laty."] },
+ { t:"Praca zdalna czy biuro? Proszę wskazać odpowiedź oficjalną oraz odpowiedź udzielaną po godzinach.",
+   a:["Oficjalnie: elastycznie. Po godzinach: strona broni domu jak twierdzy.","Biuro, z uwagi na ekspres do kawy i możliwość wyjścia z domu."] },
+ { t:"Proszę wskazać największy wydatek dokonany pod wpływem chwili, w godzinach nocnych lub w promocji, oraz ocenić trwałość satysfakcji.",
+   a:["Satysfakcja wygasła przed dostawą. Przedmiot dotarł do strony już jako wyrzut.","Zakup nocny okazał się najlepszą decyzją roku. Strona od tej pory ufa sobie po północy, co niepokoi organ."] },
+ { t:"Czy strona oszczędza na sobie? Proszę wymienić trzy przykłady lub jeden przykład rażący.",
+   a:["Strona nosi okulary sprzed dwóch korekcji wzroku.","Przykład rażący: materac. Strona śpi na nim od czasów, których nie pamięta materac."] },
+ { t:"Proszę wskazać dobro luksusowe, którego posiadanie — zdaniem strony — odmieniłoby jej życie. Organ z urzędu odnotowuje, że nie odmieniłoby.",
+   a:["Strona przyjmuje stanowisko organu do wiadomości i podtrzymuje własne.","Dobro posiada sąsiad strony. Życie sąsiada wygląda na odmienione."] },
+ { t:"Proszę opisać stosunek strony do paragonów: kolekcjonuje, wyrzuca niezwłocznie, czy nosi w kieszeni do dnia prania.",
+   a:["Paragony przechodzą pełen cykl: kieszeń, pranie, grudka.","Strona kolekcjonuje paragony do rozliczeń, których nie dokonuje."] },
+ { t:"Gdyby strona musiała od jutra utrzymywać się z rzemiosła fizycznego — proszę wskazać rzemiosło oraz oszacować straty klientów.",
+   a:["Stolarstwo. Straty klientów: głównie estetyczne.","Piekarnictwo. Strona zjadałaby utarg."] },
+ { t:"Proszę wskazać miesięczną kwotę wystarczającą stronie do szczęścia, a następnie kwotę wystarczającą naprawdę.",
+   a:["Druga kwota stanowi dwukrotność pierwszej. Obie rosną co roku.","Strona podaje kwotę skromną i czeka, aż ktoś zaprotestuje."] }
+],
+
+/* ===== 5. SPRAWY PODWYŻSZONEGO RYZYKA ===== */
+5: [
+ { t:"Czy strona pozostaje w konflikcie z którymkolwiek ze swoich byłych partnerów? Jeżeli tak — czy konflikt ma charakter czynny, czy uśpiony?",
+   a:["Konflikt uśpiony, lecz obie strony sypiają czujnie.","Nie stwierdzono konfliktu. Stwierdzono ciszę o gęstości konfliktu."] },
+ { t:"Proszę podać przybliżoną liczbę osób, w których strona była zakochana, z rozbiciem na uczucia odwzajemnione i jednostronne.",
+   a:["Rozbicie wypada na niekorzyść strony. Strona wnosi o nieprzeliczanie na procenty.","Liczba jest parzysta, wspomnienia nieparzyste."] },
+ { t:"Czy strona przegląda media społecznościowe byłych partnerów? Proszę zastosować skalę: nigdy — okazjonalnie — systematycznie — w tej chwili.",
+   a:["Okazjonalnie, to jest w każdą rocznicę i po dwóch lampkach wina.","Strona przegląda z konta zapasowego, co uważa za niebywałą powściągliwość."] },
+ { t:"Proszę opisać najgorszą randkę, w jakiej strona uczestniczyła, ze wskazaniem, czy strona była jej przyczyną.",
+   a:["Strona była przyczyną i dowiedziała się o tym z opóźnieniem.","Randka trwa w pamięci strony dłużej niż trwała w rzeczywistości."] },
+ { t:"Proszę wskazać cechę własnego charakteru, która najbardziej utrudnia życie ze stroną. Odpowiedź „jestem perfekcjonistą” nie zostanie przyjęta.",
+   a:["Strona ma zawsze rację, co potwierdza samodzielnie.","Strona obraża się cicho i czeka, aż zostanie to wykryte."] },
+ { t:"Czy strona kiedykolwiek okazywała uczucie silniejsze, niż żywiła? Proszę określić czas trwania tego stanu.",
+   a:["Stan trwał do świąt, ponieważ strona nie psuje świąt.","Strona okazywała, żywiąc nadzieję, że zacznie żywić. Nie zaczęła."] },
+ { t:"Proszę wskazać, o czym strona kłamie najczęściej: o godzinie wyjścia z domu, o przeczytanych wiadomościach czy o tym, że „już jedzie”.",
+   a:["„Już jadę” oznacza w języku strony gotowość do rozważenia ubierania się.","Wiadomość przeczytana i nieodpisana to u strony forma odpowiedzi."] },
+ { t:"Proszę przytoczyć komplement zapamiętany na lata oraz wskazać osobę, która go wypowiedziała — o ile strona pamięta również osobę.",
+   a:["Komplement pochodził od osoby obcej w kolejce i utrzymuje stronę do dziś.","Strona pamięta komplement, osobę i buty, które wtedy miała na sobie."] },
+ { t:"Czy strona wybaczyła wszystkim, którym deklaruje, że wybaczyła? Proszę podać liczbę wyjątków, bez danych osobowych.",
+   a:["Wyjątki: dwa. Oba na liście świątecznych życzeń, dla niepoznaki.","Strona wybacza szybko i zapamiętuje na zawsze. To dwa różne organy."] },
+ { t:"Proszę wskazać rzecz, której strona najbardziej żałuje, że nie powiedziała, oraz rzecz, której żałuje, że powiedziała.",
+   a:["Obie dotyczą tej samej osoby i tego samego wieczoru.","Strona wnosi o pozostawienie pierwszej rubryki pustej. Pustka jest treścią."] },
+ { t:"Czy strona płacze? Proszę wskazać okoliczności ostatniego zdarzenia oraz przyczynę: film, zmęczenie czy sprawy zasadnicze.",
+   a:["Reklama z psem. Strona nie ma dalszych pytań do siebie.","Zmęczenie, wg wersji oficjalnej. Wersji nieoficjalnej nie protokołuje się."] },
+ { t:"Proszę określić, czego strona obawia się bardziej: samotności czy niewłaściwego towarzystwa. Odpowiedź wpływa na dalszy tok postępowania.",
+   a:["Niewłaściwego towarzystwa. Z samotnością strona pozostaje w dobrych stosunkach.","Strona obawia się pytania i wnosi o chwilę ciszy, którą niniejsze postępowanie zwalcza."] },
+ { t:"Proszę wskazać sekret utrzymywany przez stronę najdłużej. Ujawnieniu podlega wyłącznie czas trwania, nie treść.",
+   a:["Od szkoły podstawowej. Osoba zainteresowana mieszka obecnie za granicą.","Czas trwania zrównał się z długością dorosłego życia strony."] },
+ { t:"Czy strona bywa zazdrosna? Proszę wskazać przedmiot zazdrości: osoby, osiągnięcia czy metabolizm.",
+   a:["Metabolizm. Strona prosi o niezadawanie pytań uzupełniających przy deserze.","Cudzy spokój. Strona nie wie, skąd ludzie go biorą."] },
+ { t:"Proszę odtworzyć w przybliżeniu wiadomość, którą strona napisała i skasowała bez wysłania.",
+   a:["Wiadomość zaczynała się od „musimy porozmawiać” i słusznie zginęła.","Wiadomość liczyła trzy ekrany. Wysłano wersję: „ok”."] },
+ { t:"Proszę określić, czy strona zakochuje się szybko, czy wolno, oraz które tempo uważa za bardziej niebezpieczne.",
+   a:["Szybko. Strona zdążyła się zakochać w trakcie niniejszego postępowania, w trybie hipotetycznym.","Wolno, za to nieodwracalnie. Strona ostrzega lojalnie."] },
+ { t:"Czy w sprawach sercowych strona ufa przeznaczeniu, czy statystyce? Proszę wskazać, co dotychczas działało skuteczniej.",
+   a:["Statystyce. Przeznaczenie ma u strony zaległości.","Przeznaczeniu, od jednego zdarzenia, którego strona nie umie wyjaśnić statystycznie."] },
+ { t:"Proszę wskazać moment, w którym strona ostatnio poczuła się naprawdę widziana przez drugiego człowieka. Formularz dopuszcza chwilę ciszy przed odpowiedzią.",
+   a:["Moment miał miejsce dawno i strona właśnie zdała sobie z tego sprawę.","Strona korzysta z dopuszczonej chwili ciszy w pełnym wymiarze."] },
+ { t:"Proszę opisać zachowanie strony wobec osoby, która się stronie podoba: unikanie, nadmiarowa komunikacja czy obserwacja z ukrycia.",
+   a:["Unikanie połączone z nadzieją na przypadkowe spotkania, starannie planowane.","Nadmiarowa komunikacja, a po wysłaniu — nadmiarowa analiza."] },
+ { t:"Czy strona utrzymuje kontakt z kimś wyłącznie z uprzejmości? Organ zaznacza, że osoba ta mogłaby zeznać to samo.",
+   a:["Kontakt trwa dwanaście lat. Uprzejmość obustronna, podejrzewana od dziesięciu.","Strona właśnie dokonała w myślach przeglądu i prosi o kolejne pytanie."] },
+ { t:"Proszę wskazać, jak strona postępuje z uczuciami trudnymi: omawia, ćwiczy, sprząta czy zamraża do wyjaśnienia.",
+   a:["Sprząta. Stan mieszkania strony bywa miarą stanu ducha.","Zamraża. Zamrażarka jest pełna i wymaga rozmrożenia nadzorowanego."] },
+ { t:"Proszę podać liczbę osób, którym strona wyznała miłość jako pierwsza, oraz ocenić rentowność tych inwestycji.",
+   a:["Inwestycje wysokiego ryzyka. Jedna zwróciła się z nawiązką i trwa.","Strona jako pierwsza nie wyznaje. Strona czeka. Bywa, że latami."] },
+ { t:"Czy strona wróciła kiedykolwiek do byłego partnera wbrew opinii wszystkich świadków? Proszę wskazać, kto miał rację.",
+   a:["Świadkowie mieli rację. Świadkowie zawsze mają rację. To irytujące.","Strona miała rację, czego świadkowie do dziś nie odnotowali w protokołach rodzinnych."] },
+ { t:"Proszę wskazać temat, przy którym strona zmienia temat. Organ odnotowuje, że strona może uczynić to również teraz.",
+   a:["Pieniądze w rodzinie. A właśnie, ładna dziś pogoda.","Strona wskazuje temat gestem i przechodzi do wariantu e)."] },
+ { t:"Proszę opisać, czego strona nauczyła się z najgorszego rozstania, oraz czy skorzystała z tej nauki przy najbliższej okazji.",
+   a:["Nauka została przyswojona teoretycznie. Praktyka poszła starym trybem.","Strona nauczyła się rozpoznawać sygnały wczesne. Obecnie ignoruje je świadomie."] },
+ { t:"Czy strona zagląda do telefonu partnera? Formularz rozróżnia: nie zagląda, zajrzała raz, posiada dostęp legalny, posiada dostęp zwyczajowy.",
+   a:["Dostęp legalny, nabyty w drodze wymiany wzajemnej. Nieużywany, bo strach.","Zajrzała raz. Wynik kontroli: negatywny. Wstyd: dożywotni."] },
+ { t:"Proszę wskazać własną cechę, o której strona wie, że działa na jej korzyść, oraz od kiedy strona świadomie z niej korzysta.",
+   a:["Uśmiech. W użyciu służbowym od czasów szkolnych.","Głos. Strona obniża go w rozmowach telefonicznych o pół tonu."] },
+ { t:"Proszę określić stan konta zaufania strony do ludzi: nadpłata, saldo zerowe czy debet po zdarzeniach ubiegłych.",
+   a:["Debet, spłacany nieregularnie przez osoby postronne dobrymi uczynkami.","Nadpłata. Strona ufa z rozpędu i planuje nie przestawać."] },
+ { t:"Czy strona umie przepraszać? Proszę przytoczyć ostatnie przeprosiny, w miarę możliwości z pominięciem słowa „ale”.",
+   a:["Ostatnie przeprosiny zawierały słowo „ale” trzykrotnie. Strona pracuje nad sobą.","Strona przeprasza czynami: herbatą, ciszą i wyniesieniem śmieci."] },
+ { t:"Proszę wskazać, co musiałoby się wydarzyć, aby strona uznała dzisiejszy wieczór za udany. Organ przyjmuje odpowiedź do wiadomości i uczyni z niej użytek.",
+   a:["Wieczór zmierza we właściwym kierunku, co strona oświadcza ostrożnie.","Strona przedstawi wymagania po ich spełnieniu."] }
+]
+};
+
+/* ---------- Rozruch ---------- */
+document.getElementById("godlo").innerHTML = pieczecSVG(64, "godlo");
+(function(){
+  const zapisane = wczytaj();
+  if(zapisane && typeof zapisane.kat === "number"){ akta = zapisane; }
+  BPT.doStartu();
+})();
+
+/* Rejestracja service workera — wyłącznie poza protokołem file:// */
+if("serviceWorker" in navigator && location.protocol !== "file:"){
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
+</script>
+</body>
+</html>

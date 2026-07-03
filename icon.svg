@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Ikona aplikacji: okrągła pieczęć BPT na papierze ecru.
+       Tło wypełnia cały kwadrat, więc ikona nadaje się też jako maskable. -->
+  <rect width="512" height="512" fill="#f7f2e6"/>
+  <g fill="none" stroke="#a3271f">
+    <circle cx="256" cy="256" r="196" stroke-width="10"/>
+    <circle cx="256" cy="256" r="142" stroke-width="4"/>
+  </g>
+  <path id="luk" d="M 256,256 m -169,0 a 169,169 0 1,1 338,0 a 169,169 0 1,1 -338,0" fill="none"/>
+  <text fill="#a3271f" font-size="30" font-family="Georgia, 'Times New Roman', serif" letter-spacing="5">
+    <textPath href="#luk">BIURO POSTĘPOWAŃ TOWARZYSKICH ★ ORGAN I INSTANCJI ★</textPath>
+  </text>
+  <text x="256" y="244" text-anchor="middle" fill="#a3271f" font-size="86" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" letter-spacing="10">BPT</text>
+  <text x="256" y="304" text-anchor="middle" fill="#a3271f" font-size="27" font-family="Georgia, 'Times New Roman', serif" letter-spacing="7">WYDZIAŁ I</text>
+</svg>
